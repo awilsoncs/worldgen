@@ -2,7 +2,7 @@ import numpy as np
 import random
 import math
 import pygame
-import threading
+from multiprocessing import Pool, Lock
 
 def process(window, s):
     '''
@@ -33,37 +33,21 @@ def step(a, s, i):
     s: The size tuple of the operating square
     i: Int number of iterations
     '''
-    ## TO-DO: This could likely be multithreaded to speed it up.
     print "."
-    ## To perform a step, iterate across each s*s square in the array twice.
-    ## DS requires that the first line of each square is the last line of the
-    ## previous square. This leaves an additional column, so iterate one short.
-    
-    ## Diamond step
-    diamond(a, s, i)
-    
-    ## Square step
-    square(a, s, i)
-
-def diamond(a, s, i):
-    '''
-    Iterates through the Array a, performing sub_diamond on each square.
-    a: Array to be operated on
-    s: size of the square
-    i: Int number of iterations
-    '''
     shape = a.shape
-    for x in range(0, shape[0]-1, s[0]-1):
-        for y in range(0, shape[1]-1, s[1]-1):
-            sub_coords = (x, x+s[0]-1, y, y+s[1]-1)
-            ## debug sanity check, test for misalignment
-            #if x+s - x != y+s - y:
-            #    print "ERROR: diamond call"
-            #    print "\tNot a square (%d, %d)" % (x+s - x, y+s -y)
-            #    assert False
-            sub_diamond(a, sub_coords, i)
+    ## DS requires that the first line of each square is the last line of the
+    ## previous square.
+    square_x = s[0]-1
+    square_y = s[1]-1
+    ## This leaves an additional column, so iterate one short.
+    for x in xrange(0, shape[0]-1, square_x):
+        for y in xrange(0, shape[1]-1, square_y):
+            sub_coords = (x, x+square_x, y, y+square_y)
 
-def sub_diamond(a, c, i):
+            diamond(a, sub_coords, i)
+            square(a, sub_coords, i)
+
+def diamond(a, c, i):
     '''
     Set the center of coords to the average of the four corners, plus random 
     noise.
@@ -86,27 +70,9 @@ def sub_diamond(a, c, i):
         #debug, make sure value was changed
         #if a[x, y] == 0.0:
         #    print "ERROR: Value not assigned at (%d, %d)" % (x, y)
-        #    assert False
+        #    assert False 
 
-def square(a, s, i):
-    '''
-    Iterates through the Array a, performing sub_square on each square.
-    a: Array to be operated on
-    s: size of the square
-    i: Int number of iterations
-    '''
-    shape = a.shape
-    for x in range(0, shape[0]-1, s[0]-1):
-        for y in range(0, shape[1]-1, s[1]-1):
-            sub_coords = (x, x+s[0]-1, y, y+s[1]-1)
-            ## debug sanity check, test for misalignment
-            #if x+s - x != y+s - y:
-            #    print "ERROR: square call"
-            #    print "\tNot a square (%d, %d)" % (x+s - x, y+s -y)
-            #    assert False
-            sub_square(a, sub_coords, i)    
-
-def sub_square(a, c, i):
+def square(a, c, i):
     '''
     Array a has four sides with midpoints. Perform sub_diamond on each side.
     a: Array to be operated on
@@ -119,9 +85,9 @@ def sub_square(a, c, i):
     sub_c = (c[0], c[0], c[2], c[3])
     sub_d = (c[1], c[1], c[2], c[3])
     subs = [sub_a, sub_b, sub_c, sub_d]
-    # for a 1D subarray, sub_diamond works the same as sub_square should.
+    # for a 1D subarray, diamond works the same as square should.
     for sub in subs:
-        sub_diamond(a, sub, i)
+        diamond(a, sub, i)
         
 ## Utilities
 
@@ -142,7 +108,7 @@ def get_value(values=1, i=1):
     #    print "\tReturned non-float"
     #    assert False
     return v
-    
+
 ## Pre-generation functions
 
 def get_array(s):
@@ -185,13 +151,7 @@ def build_pxarray(surface, a):
     print "Rendering..."
     pxarray = pygame.PixelArray(surface)
     
-    for x in range(a.shape[0]):
-        for y in range(a.shape[1]):
-            v = a[x, y] * 255
-            pxarray[x, y] = (v, v, v)
+    for (x, y), v in np.ndenumerate(a):
+        v = v*255
+        pxarray[x, y] = (v, v, v)
     return pxarray
-    
-    
-    
-    
-    
