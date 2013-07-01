@@ -21,7 +21,7 @@ def process(window, s):
     print "Final pass..."
     step(a, s, i)
     # Finalize the array
-    scale_array(a)
+    a = scale_array(a)
     return a
 
 def step(a, s, i):
@@ -33,34 +33,33 @@ def step(a, s, i):
     '''
     ## TO-DO: This could likely be multithreaded to speed it up.
     print "."
-    shape = a.shape
     ## To perform a step, iterate across each s*s square in the array twice.
     ## DS requires that the first line of each square is the last line of the
     ## previous square. This leaves an additional column, so iterate one short.
     
     ## Diamond step
-    
-    
-    for x in range(0, shape[0]-1, s-1):
-        for y in range(0, shape[1]-1, s-1):
-            sub_coords = (x, x+s-1, y, y+s-1)
-            ## debug sanity check, test for misalignment
-            if x+s - x != y+s - y:
-                print "ERROR: diamond call"
-                print "\tNot a square (%d, %d)" % (x+s - x, y+s -y)
-                assert False
-            sub_diamond(a, sub_coords, i)
+    diamond(a, s, i)
     
     ## Square step
+    square(a, s, i)
+
+def diamond(a, s, i):
+    '''
+    Iterates through the Array a, performing sub_diamond on each square.
+    a: Array to be operated on
+    s: size of the square
+    i: Int number of iterations
+    '''
+    shape = a.shape
     for x in range(0, shape[0]-1, s-1):
         for y in range(0, shape[1]-1, s-1):
             sub_coords = (x, x+s-1, y, y+s-1)
             ## debug sanity check, test for misalignment
-            if x+s - x != y+s - y:
-                print "ERROR: square call"
-                print "\tNot a square (%d, %d)" % (x+s - x, y+s -y)
-                assert False
-            sub_square(a, sub_coords, i)
+            #if x+s - x != y+s - y:
+            #    print "ERROR: diamond call"
+            #    print "\tNot a square (%d, %d)" % (x+s - x, y+s -y)
+            #    assert False
+            sub_diamond(a, sub_coords, i)
 
 def sub_diamond(a, c, i):
     '''
@@ -83,10 +82,29 @@ def sub_diamond(a, c, i):
         v = get_value(v, i)
         a[x, y] = v
         #debug, make sure value was changed
-        if a[x, y] == 0.0:
-            print "ERROR: Value not assigned at (%d, %d)" % (x, y)
-            assert False
-            
+        #if a[x, y] == 0.0:
+        #    print "ERROR: Value not assigned at (%d, %d)" % (x, y)
+        #    assert False
+
+def square(a, s, i):
+    '''
+    Iterates through the Array a, performing sub_square on each square.
+    a: Array to be operated on
+    s: size of the square
+    i: Int number of iterations
+    '''
+    
+    shape = a.shape
+    for x in range(0, shape[0]-1, s-1):
+        for y in range(0, shape[1]-1, s-1):
+            sub_coords = (x, x+s-1, y, y+s-1)
+            ## debug sanity check, test for misalignment
+            #if x+s - x != y+s - y:
+            #    print "ERROR: square call"
+            #    print "\tNot a square (%d, %d)" % (x+s - x, y+s -y)
+            #    assert False
+            sub_square(a, sub_coords, i)    
+
 def sub_square(a, c, i):
     '''
     Array a has four sides with midpoints. Perform sub_square on each side.
@@ -101,7 +119,7 @@ def sub_square(a, c, i):
     sub_d = (c[1], c[1], c[2], c[3])
     subs = [sub_a, sub_b, sub_c, sub_d]
     for sub in subs:
-        diamond(a, sub, i)
+        sub_diamond(a, sub, i)
         
 ## Utilities
 
@@ -115,12 +133,12 @@ def get_value(values=1, i=1):
         v = values
     else:
         v = float(sum(values)) / float(len(values))
-    v += random.uniform(-1.0,1.0) / float(i)
+    v += random.uniform(-5.0,5.0) / float(i)
     #debug, make sure we're getting a float back
-    if type(v) != float:
-        print "Error: get_value failed"
-        print "\tReturned non-float"
-        assert False
+    #if type(v) != float:
+    #    print "Error: get_value failed"
+    #    print "\tReturned non-float"
+    #    assert False
     return v
     
 ## Pre-generation functions
@@ -146,26 +164,16 @@ def scale_array(a):
     Scales all values in the array to 0.0-1.0 floats.
     a: Array to be operated on.
     '''
-    print "Scaling Array..."
+    print "Scaling array..."
     shape = a.shape
     maximum = None
     for x in np.nditer(a):
         if abs(x) > maximum:
             maximum = abs(x)
-                
-    for x in range(shape[0]):
-        for y in range(shape[1]):
-            a[x, y] = a[x, y] / (2 * maximum)
-            a[x, y] += 0.5
-            
-            ## Debug, make sure the scaling worked
-            if a[x, y] < 0.0:
-                print "ERROR: In scale_array debug, found x < 0.0"
-                assert False
-            elif a[x, y] > 1.0:
-                print "ERROR: In scale_array debug, found x > 1.0"
-                assert False
-                
+               
+    a = a / (2 * maximum) + 0.5
+    return a
+    
 def build_pxarray(surface, a):
     '''
     Returns a greyscale pxarray based on input array.

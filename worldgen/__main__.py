@@ -1,10 +1,15 @@
+## Packaged modules
 import sys
-import algorithm
 import math
+import time
 
+## Local modules
+import algorithm
+
+## Pygame
 import pygame
 pygame.init() 
-
+t = time.time()
 ## Generation functions
 
 script, size = sys.argv[0], int(sys.argv[1])
@@ -23,6 +28,7 @@ window = pygame.display.set_mode((size, size))
 a = algorithm.process(window, size)
 px = algorithm.build_pxarray(window, a)
 pygame.display.flip()
+print "Ran in %r seconds." % (time.time() - t)
 del px
 ## Boilerplate
 while True:
