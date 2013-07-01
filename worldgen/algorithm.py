@@ -10,13 +10,15 @@ def process(window, s):
     window: Surface to apply the PixelArray
     s: the size tuple of the window.
     '''
-    a = get_array((s,s))
+    a = get_array(s)
     i = 1
     print "Beginning height map..."
     print "This may take a while"
-    while s > 2:
+    while s[0] > 2 and s[1] > 2:
         step(a, s, i)
-        s = int(math.ceil(s/2.0))
+        x = int(math.ceil(s[0]/2.0))
+        y = int(math.ceil(s[1]/2.0))
+        s = (x, y)
         i += 1
     print "Final pass..."
     step(a, s, i)
@@ -51,9 +53,9 @@ def diamond(a, s, i):
     i: Int number of iterations
     '''
     shape = a.shape
-    for x in range(0, shape[0]-1, s-1):
-        for y in range(0, shape[1]-1, s-1):
-            sub_coords = (x, x+s-1, y, y+s-1)
+    for x in range(0, shape[0]-1, s[0]-1):
+        for y in range(0, shape[1]-1, s[1]-1):
+            sub_coords = (x, x+s[0]-1, y, y+s[1]-1)
             ## debug sanity check, test for misalignment
             #if x+s - x != y+s - y:
             #    print "ERROR: diamond call"
@@ -95,9 +97,9 @@ def square(a, s, i):
     '''
     
     shape = a.shape
-    for x in range(0, shape[0]-1, s-1):
-        for y in range(0, shape[1]-1, s-1):
-            sub_coords = (x, x+s-1, y, y+s-1)
+    for x in range(0, shape[0]-1, s[0]-1):
+        for y in range(0, shape[1]-1, s[1]-1):
+            sub_coords = (x, x+s[0]-1, y, y+s[1]-1)
             ## debug sanity check, test for misalignment
             #if x+s - x != y+s - y:
             #    print "ERROR: square call"
