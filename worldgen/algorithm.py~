@@ -30,6 +30,7 @@ def step(a, s, i):
     s: The size tuple of the operating square
     i: Int number of iterations
     '''
+    ## TO-DO: This could likely be multithreaded to speed it up.
     print "."
     shape = a.shape
     ## To perform a step, iterate across each s*s square in the array twice.
@@ -45,7 +46,7 @@ def step(a, s, i):
                 print "ERROR: diamond call"
                 print "\tNot a square (%d, %d)" % (x+s - x, y+s -y)
                 assert False
-            diamond(a, sub_coords, i)
+            sub_diamond(a, sub_coords, i)
     
     ## Square step
     for x in range(0, shape[0]-1, s-1):
@@ -56,9 +57,9 @@ def step(a, s, i):
                 print "ERROR: square call"
                 print "\tNot a square (%d, %d)" % (x+s - x, y+s -y)
                 assert False
-            square(a, sub_coords, i)
+            sub_square(a, sub_coords, i)
 
-def diamond(a, c, i):
+def sub_diamond(a, c, i):
     '''
     Set the center of coords to the average of the four corners, plus random 
     noise.
@@ -83,7 +84,7 @@ def diamond(a, c, i):
             print "ERROR: Value not assigned at (%d, %d)" % (x, y)
             assert False
             
-def square(a, c, i):
+def sub_square(a, c, i):
     '''
     Array a has four sides with midpoints. Perform sub_square on each side.
     a: Array to be operated on
@@ -98,20 +99,7 @@ def square(a, c, i):
     subs = [sub_a, sub_b, sub_c, sub_d]
     for sub in subs:
         diamond(a, sub, i)
-
-def sub_square(a, c, i):
-    '''
-    Set midpoint equal to get_value on
-    a: Array to be operated on
-    c: Coordinates to be operated on
-        (x1, x2, y1, y2)
-    i: Int number of iterations.
-    
-    TO-DO
-    I believe that diamond() can actually be used if the coordinates are 1D.
-    '''
-    pass
-
+        
 ## Utilities
 
 def get_value(values=1, i=1):

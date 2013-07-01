@@ -2,6 +2,7 @@ import numpy as np
 import random
 import math
 import pygame
+import threading
 
 def process(window, s):
     '''
@@ -38,6 +39,8 @@ def step(a, s, i):
     ## previous square. This leaves an additional column, so iterate one short.
     
     ## Diamond step
+    
+    
     for x in range(0, shape[0]-1, s-1):
         for y in range(0, shape[1]-1, s-1):
             sub_coords = (x, x+s-1, y, y+s-1)
