@@ -10,13 +10,15 @@ def process(window, s):
     window: Surface to apply the PixelArray
     s: the size tuple of the window.
     '''
-    a = get_array((s,s))
+    a = get_array(s)
     i = 1
     print "Beginning height map..."
     print "This may take a while"
-    while s > 2:
+    while s[0] > 2 and s[1] > 2:
         step(a, s, i)
-        s = int(math.ceil(s/2.0))
+        x = int(math.ceil(s[0]/2.0))
+        y = int(math.ceil(s[1]/2.0))
+        s = (x, y)
         i += 1
     print "Final pass..."
     step(a, s, i)
@@ -51,9 +53,9 @@ def diamond(a, s, i):
     i: Int number of iterations
     '''
     shape = a.shape
-    for x in range(0, shape[0]-1, s-1):
-        for y in range(0, shape[1]-1, s-1):
-            sub_coords = (x, x+s-1, y, y+s-1)
+    for x in range(0, shape[0]-1, s[0]-1):
+        for y in range(0, shape[1]-1, s[1]-1):
+            sub_coords = (x, x+s[0]-1, y, y+s[1]-1)
             ## debug sanity check, test for misalignment
             #if x+s - x != y+s - y:
             #    print "ERROR: diamond call"
@@ -93,11 +95,10 @@ def square(a, s, i):
     s: size of the square
     i: Int number of iterations
     '''
-    
     shape = a.shape
-    for x in range(0, shape[0]-1, s-1):
-        for y in range(0, shape[1]-1, s-1):
-            sub_coords = (x, x+s-1, y, y+s-1)
+    for x in range(0, shape[0]-1, s[0]-1):
+        for y in range(0, shape[1]-1, s[1]-1):
+            sub_coords = (x, x+s[0]-1, y, y+s[1]-1)
             ## debug sanity check, test for misalignment
             #if x+s - x != y+s - y:
             #    print "ERROR: square call"
@@ -107,7 +108,7 @@ def square(a, s, i):
 
 def sub_square(a, c, i):
     '''
-    Array a has four sides with midpoints. Perform sub_square on each side.
+    Array a has four sides with midpoints. Perform sub_diamond on each side.
     a: Array to be operated on
     c: Coordinates to be operated on
         (x1, x2, y1, y2)
@@ -118,6 +119,7 @@ def sub_square(a, c, i):
     sub_c = (c[0], c[0], c[2], c[3])
     sub_d = (c[1], c[1], c[2], c[3])
     subs = [sub_a, sub_b, sub_c, sub_d]
+    # for a 1D subarray, sub_diamond works the same as sub_square should.
     for sub in subs:
         sub_diamond(a, sub, i)
         
@@ -182,8 +184,16 @@ def build_pxarray(surface, a):
     '''
     print "Rendering..."
     pxarray = pygame.PixelArray(surface)
-    for x in range(a.shape[0]):
-        for y in range(a.shape[1]):
-            v = a[x, y] * 255
-            pxarray[x, y] = (v, v, v)
+    
+    pxarray[:] = a * 255
+    
+    #for x in range(a.shape[0]):
+    #    for y in range(a.shape[1]):
+    #        v = a[x, y] * 255
+    #        pxarray[x, y] = (v, v, v)
     return pxarray
+    
+    
+    
+    
+    

@@ -95,7 +95,6 @@ def square(a, s, i):
     s: size of the square
     i: Int number of iterations
     '''
-    
     shape = a.shape
     for x in range(0, shape[0]-1, s[0]-1):
         for y in range(0, shape[1]-1, s[1]-1):
@@ -109,7 +108,7 @@ def square(a, s, i):
 
 def sub_square(a, c, i):
     '''
-    Array a has four sides with midpoints. Perform sub_square on each side.
+    Array a has four sides with midpoints. Perform sub_diamond on each side.
     a: Array to be operated on
     c: Coordinates to be operated on
         (x1, x2, y1, y2)
@@ -120,6 +119,7 @@ def sub_square(a, c, i):
     sub_c = (c[0], c[0], c[2], c[3])
     sub_d = (c[1], c[1], c[2], c[3])
     subs = [sub_a, sub_b, sub_c, sub_d]
+    # for a 1D subarray, sub_diamond works the same as sub_square should.
     for sub in subs:
         sub_diamond(a, sub, i)
         
@@ -184,8 +184,14 @@ def build_pxarray(surface, a):
     '''
     print "Rendering..."
     pxarray = pygame.PixelArray(surface)
+    
     for x in range(a.shape[0]):
         for y in range(a.shape[1]):
             v = a[x, y] * 255
             pxarray[x, y] = (v, v, v)
     return pxarray
+    
+    
+    
+    
+    
