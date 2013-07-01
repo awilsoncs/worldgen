@@ -1,21 +1,14 @@
-import sys
 import numpy as np
 import random
 import math
-
 import pygame
-pygame.init() 
 
-## Generation functions
-
-script, size = sys.argv[0], int(sys.argv[1])
-
-def process(s):
+def process(window, s):
     '''
     Generate a DS heightmap.
+    window: Surface to apply the PixelArray
     s: the size tuple of the window.
     '''
-    window = pygame.display.set_mode((s, s))
     a = get_array((s,s))
     i = 1
     print "Beginning height map..."
@@ -28,9 +21,7 @@ def process(s):
     step(a, s, i)
     # Finalize the array
     scale_array(a)
-    a = build_pxarray(window, a)
-    del a
-    pygame.display.flip()
+    return a
 
 def step(a, s, i):
     '''
@@ -66,7 +57,7 @@ def step(a, s, i):
                 print "Error: sub_a not square (%d, %d)" % (x+s - x, y+s -y)
                 assert False
             square(a, sub_coords, i)
-    
+
 def diamond(a, c, i):
     '''
     Set the center of coords to the average of the four corners, plus random 
@@ -91,7 +82,7 @@ def diamond(a, c, i):
         if a[x, y] == 0.0:
             print "Value not assigned at (%d, %d)" % (x, y)
             assert False
-    
+            
 def square(a, c, i):
     '''
     Array a has four sides with midpoints. Perform sub_square on each side.
@@ -120,7 +111,6 @@ def sub_square(a, c, i):
     I believe that diamond() can actually be used if the coordinates are 1D.
     '''
     pass
-    
 
 ## Utilities
 
@@ -141,7 +131,7 @@ def get_value(values=1, i=1):
         print "Returned non-float"
         assert False
     return v
-
+    
 ## Pre-generation functions
 
 def get_array(s):
@@ -157,6 +147,7 @@ def get_array(s):
     a[-1, 0] =      get_value()
     a[-1, -1] =     get_value()
     return a
+    
 ## Post-generation functions
 
 def scale_array(a):
@@ -184,7 +175,7 @@ def scale_array(a):
             elif a[x, y] > 1.0:
                 print "In scale_array debug, found x > 1.0"
                 assert False
-    
+                
 def build_pxarray(surface, a):
     '''
     Returns a greyscale pxarray based on input array.
@@ -197,13 +188,4 @@ def build_pxarray(surface, a):
         for y in range(a.shape[1]):
             v = a[x, y] * 255
             pxarray[x, y] = (v, v, v)
-
-## Run the code
-process(size)
-## Boilerplate
-while True:
-    for event in pygame.event.get(): 
-        if event.type == pygame.QUIT: 
-            sys.exit(0) 
-        else: 
-            print event 
+    return pxarray
