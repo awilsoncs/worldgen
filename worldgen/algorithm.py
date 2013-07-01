@@ -30,6 +30,7 @@ def step(a, s, i):
     s: The size tuple of the operating square
     i: Int number of iterations
     '''
+    ## TO-DO: This could likely be multithreaded to speed it up.
     print "."
     shape = a.shape
     ## To perform a step, iterate across each s*s square in the array twice.
@@ -42,10 +43,10 @@ def step(a, s, i):
             sub_coords = (x, x+s-1, y, y+s-1)
             ## debug sanity check, test for misalignment
             if x+s - x != y+s - y:
-                print "Sanity check failed: diamond call"
-                print "Error: sub_a not square (%d, %d)" % (x+s - x, y+s -y)
+                print "ERROR: diamond call"
+                print "\tNot a square (%d, %d)" % (x+s - x, y+s -y)
                 assert False
-            diamond(a, sub_coords, i)
+            sub_diamond(a, sub_coords, i)
     
     ## Square step
     for x in range(0, shape[0]-1, s-1):
@@ -53,12 +54,12 @@ def step(a, s, i):
             sub_coords = (x, x+s-1, y, y+s-1)
             ## debug sanity check, test for misalignment
             if x+s - x != y+s - y:
-                print "Sanity check failed: square call"
-                print "Error: sub_a not square (%d, %d)" % (x+s - x, y+s -y)
+                print "ERROR: square call"
+                print "\tNot a square (%d, %d)" % (x+s - x, y+s -y)
                 assert False
-            square(a, sub_coords, i)
+            sub_square(a, sub_coords, i)
 
-def diamond(a, c, i):
+def sub_diamond(a, c, i):
     '''
     Set the center of coords to the average of the four corners, plus random 
     noise.
@@ -80,10 +81,10 @@ def diamond(a, c, i):
         a[x, y] = v
         #debug, make sure value was changed
         if a[x, y] == 0.0:
-            print "Value not assigned at (%d, %d)" % (x, y)
+            print "ERROR: Value not assigned at (%d, %d)" % (x, y)
             assert False
             
-def square(a, c, i):
+def sub_square(a, c, i):
     '''
     Array a has four sides with midpoints. Perform sub_square on each side.
     a: Array to be operated on
@@ -98,20 +99,7 @@ def square(a, c, i):
     subs = [sub_a, sub_b, sub_c, sub_d]
     for sub in subs:
         diamond(a, sub, i)
-
-def sub_square(a, c, i):
-    '''
-    Set midpoint equal to get_value on
-    a: Array to be operated on
-    c: Coordinates to be operated on
-        (x1, x2, y1, y2)
-    i: Int number of iterations.
-    
-    TO-DO
-    I believe that diamond() can actually be used if the coordinates are 1D.
-    '''
-    pass
-
+        
 ## Utilities
 
 def get_value(values=1, i=1):
@@ -127,8 +115,8 @@ def get_value(values=1, i=1):
     v += random.uniform(-1.0,1.0) / float(i)
     #debug, make sure we're getting a float back
     if type(v) != float:
-        print "Sanity check: get_value failed"
-        print "Returned non-float"
+        print "Error: get_value failed"
+        print "\tReturned non-float"
         assert False
     return v
     
@@ -158,10 +146,9 @@ def scale_array(a):
     print "Scaling Array..."
     shape = a.shape
     maximum = None
-    for x in range(shape[0]):
-        for y in range(shape[1]):
-            if abs(a[x, y]) > maximum:
-                maximum = abs(a[x, y])
+    for x in np.nditer(a):
+        if abs(x) > maximum:
+            maximum = abs(x)
                 
     for x in range(shape[0]):
         for y in range(shape[1]):
@@ -170,10 +157,10 @@ def scale_array(a):
             
             ## Debug, make sure the scaling worked
             if a[x, y] < 0.0:
-                print "In scale_array debug, found x < 0.0"
+                print "ERROR: In scale_array debug, found x < 0.0"
                 assert False
             elif a[x, y] > 1.0:
-                print "In scale_array debug, found x > 1.0"
+                print "ERROR: In scale_array debug, found x > 1.0"
                 assert False
                 
 def build_pxarray(surface, a):
