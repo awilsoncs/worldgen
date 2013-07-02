@@ -1,7 +1,6 @@
 import numpy as np
 import random
 import math
-import pygame
 
 def process(wm):
     '''
@@ -10,7 +9,8 @@ def process(wm):
     '''
     s = wm.size
     i = 1
-    seed_values(wm)
+    seed_corners(wm)
+    seed_seams(wm)
     print "Beginning map..."
     print "This may take a while"
     while s[0] > 2 and s[1] > 2:
@@ -22,7 +22,7 @@ def process(wm):
     print "Final pass..."
     step(wm, s, i)
     # Finalize the array
-    wm = scale_array(wm)
+    scale_array(wm)
     return wm
 
 def step(wm, s, i):
@@ -103,17 +103,45 @@ def get_value(values=1, i=1):
 
 ## Pre-generation functions
 
-def seed_values(wm):
+def seed_corners(wm):
     '''
     Get values for the corners of the wm array.
     wm: Worldmap object to operate on.
     '''
     print "Seeding corners..."
     for key in wm.ds_generated:
-        wm.put((0, 0), key, get_value())
-        wm.put((0, -1), key, get_value())
-        wm.put((-1, 0), key, get_value())
-        wm.put((-1, -1), key, get_value())
+        value_a = get_value()
+        value_b = get_value()
+        wm.put((0, 0), key, value_a)
+        wm.put((0, -1), key, value_b)
+        wm.put((-1, 0), key, value_a)
+        wm.put((-1, -1), key, value_b)
+        
+def seed_seams(wm):
+    '''
+    Inserts values into the edges of the map to create continuous lines.
+    wm: Worldmap object to be operated on.
+    '''
+    print "Sewing seams..."
+    height = wm.size[1]
+    i = 1
+    while height > 0:
+        for y in range(0, wm.size[1]-1, height-1):
+            print "At y: %d" % y
+            for key in wm.ds_generated:
+                top_value = wm.get((0, y), key)
+                bottom_value = wm.get((0, y+height-1), key)
+                v = get_value((top_value, bottom_value), i)
+                wm.put((0, y + height / 2), key, v)
+                wm.put((-1, y + height / 2), key, v)
+        i += 1
+        if height == 1:
+            break
+        height = int(math.ceil(height / 2.0))
+     ## Debug
+    for y in range(wm.size[1]):
+       left = wm.get((0, y), 'altitude')
+       right = wm.get((-1, y), 'altitude')
     
 ## Post-generation functions
 
@@ -124,8 +152,8 @@ def scale_array(wm):
     '''
     # find the maximum for each key
     max_dict = {}
-    max_dict[key] = None
     for key in wm.ds_generated:
+        max_dict[key] = None
         fl = wm.array.flat
         for item in fl:
             if abs(item[key]) > max_dict[key]:
@@ -134,18 +162,4 @@ def scale_array(wm):
     for item in fl:
         for key in wm.ds_generated:
             item[key] = item[key] / (max_dict[key]*2.0) + 0.5
-    
-def build_pxarray(surface, wm, key):
-    '''
-    Returns a greyscale pxarray based on input array.
-    surface: A surface object to add the pxarray to.
-    wm: Worldmap object to build from.
-    key: attribute in wm to build from.
-    '''
-    print "Rendering..."
-    pxarray = pygame.PixelArray(surface)
-    for x in range(wm.shape[0]):
-        for y in range(wm.shape[1]):
-            v = wm.get((x, y), key)*255
-            pxarray[x, y] = (v, v, v)
             

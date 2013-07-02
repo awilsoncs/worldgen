@@ -6,13 +6,14 @@ import time
 ## Local modules
 import algorithm
 import worldmaps
+import views
 
 ## Pygame
 import pygame
 pygame.init() 
 t = time.time()
-## Generation functions
 
+## Input handling
 script, x, y = sys.argv[0], int(sys.argv[1]), int(sys.argv[2])
 size = (x, y)
 if x <= 0 or y <= 0:
@@ -27,11 +28,12 @@ if math.log(x-1, 2) % 1 != 0.0 or math.log(y-1, 2) % 1 != 0.0:
 ## Run the code
 window = pygame.display.set_mode(size)
 wm = worldmaps.Worldmap(size)
-a = algorithm.process(window, wm)
-px = algorithm.build_pxarray(window, wm, 'altitude')
+wm = algorithm.process(wm)
+altview = views.AltitudeView(window, wm)
+altview.render()
 pygame.display.flip()
+
 print "Ran in %r seconds." % (time.time() - t)
-del px
 ## Boilerplate
 while True:
     for event in pygame.event.get(): 
