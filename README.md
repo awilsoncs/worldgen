@@ -1,7 +1,7 @@
 worldgen
 ========
 
-A world generator, designed to give complete and detailed information about a location with a click.
+A world generator, designed for worldbuilders and DMs who want information beyond maps.
 
 
 ## Using worldgen
