@@ -24,9 +24,10 @@ class AltitudeView(object):
         del pxarray  
 
 class AltitudeView_wOcean(object):
-    def __init__(self, surface, worldmap):
+    def __init__(self, surface, worldmap, depth):
         self.wm = worldmap
         self.surface = surface
+        self.depth = depth
 
     def render(self):
         '''
@@ -41,7 +42,7 @@ class AltitudeView_wOcean(object):
             for y in range(wm.shape[1]):
                 r,g,b = 0,0,0
                 v = wm.get((x, y), key)
-                if v < 0.8:
+                if v < self.depth:
                     b = v*255
                 else:
                     g = v*255

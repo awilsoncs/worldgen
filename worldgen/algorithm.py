@@ -123,23 +123,28 @@ def seed_seams(wm):
     wm: Worldmap object to be operated on.
     '''
     print "Sewing seams..."
+    
+    ## Vertical seams
     height = wm.size[1]
     i = 1
     while height > 1:
         for y in range(0, wm.size[1]-1, height-1):
-            print "At y: %d" % y
             for key in wm.ds_generated:
                 top_value = wm.get((0, y), key)
-                bottom_value = wm.get((0, y+height-1), key)
+                bottom_value = wm.get((0, y+height-1), key)                
                 v = get_value((top_value, bottom_value), i)
                 wm.put((0, y + height / 2), key, v)
                 wm.put((-1, y + height / 2), key, v)
         i += 1
         height = int(math.ceil(height / 2.0))
-     ## Debug
-    for y in range(wm.size[1]):
-       left = wm.get((0, y), 'altitude')
-       right = wm.get((-1, y), 'altitude')
+    ## Horizonal seams
+    for x in range(wm.size[0]):
+        for key in wm.ds_generated:
+            v1 = wm.get((0, 0), key)
+            v2 = wm.get((0, -1), key)
+            
+            wm.put((x, 0), key, v1)
+            wm.put((x, -1), key, v2)
     
 ## Post-generation functions
 

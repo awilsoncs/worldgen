@@ -19,7 +19,7 @@ class Worldmap(object):
         '''
         if self.array[x, y] == None:
             self.array[x, y] = {}
-        if get_by in self.array[x, y].keys():
+        if self.array[x, y].has_key(get_by):
             return self.array[x, y][get_by]
         else:
             return None
