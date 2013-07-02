@@ -5,6 +5,7 @@ import time
 
 ## Local modules
 import algorithm
+import worldmaps
 
 ## Pygame
 import pygame
@@ -25,8 +26,9 @@ if math.log(x-1, 2) % 1 != 0.0 or math.log(y-1, 2) % 1 != 0.0:
 
 ## Run the code
 window = pygame.display.set_mode(size)
-a = algorithm.process(window, size)
-px = algorithm.build_pxarray(window, a)
+wm = worldmaps.Worldmap(size)
+a = algorithm.process(wm)
+px = algorithm.build_pxarray(window, wm, 'altitude')
 pygame.display.flip()
 print "Ran in %r seconds." % (time.time() - t)
 del px

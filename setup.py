@@ -10,8 +10,8 @@ config = {
     'download_url': 'Where to download it.',
     'author_email': 'aaronwilsonguitar@gmail.com',
     'version': '0.1',
-    'install_requires': ['nose']
-    'packages': ['worldgen'],
+    'install_requires': ['nose'],
+    'packages': ['worldgen', 'algorithm', 'Worldmaps'],
     'scripts': [],
     'name': 'worldgen'
 }

@@ -2,56 +2,56 @@ import numpy as np
 import random
 import math
 import pygame
-from multiprocessing import Pool, Lock
 
-def process(window, s):
+def process(wm):
     '''
-    Generate a DS heightmap.
-    window: Surface to apply the PixelArray
-    s: the size tuple of the window.
+    Populate an wm with values.
+    wm: The Worldmap object to operate on.
     '''
-    a = get_array(s)
+    s = wm.size
     i = 1
-    print "Beginning height map..."
+    seed_values(wm)
+    print "Beginning map..."
     print "This may take a while"
     while s[0] > 2 and s[1] > 2:
-        step(a, s, i)
+        step(wm, s, i)
         x = int(math.ceil(s[0]/2.0))
         y = int(math.ceil(s[1]/2.0))
         s = (x, y)
         i += 1
     print "Final pass..."
-    step(a, s, i)
+    step(wm, s, i)
     # Finalize the array
-    a = scale_array(a)
-    return a
+    wm = scale_array(wm)
+    return wm
 
-def step(a, s, i):
+def step(wm, s, i):
     '''
     Process one step of Diamond/Square algorithm.
-    a: Array to be operated on
+    wm: Worldmap object to be operated on
     s: The size tuple of the operating square
     i: Int number of iterations
     '''
     print "."
-    shape = a.shape
+    shape = wm.shape
     ## DS requires that the first line of each square is the last line of the
     ## previous square.
     square_x = s[0]-1
     square_y = s[1]-1
     ## This leaves an additional column, so iterate one short.
+        
     for x in xrange(0, shape[0]-1, square_x):
         for y in xrange(0, shape[1]-1, square_y):
             sub_coords = (x, x+square_x, y, y+square_y)
 
-            diamond(a, sub_coords, i)
-            square(a, sub_coords, i)
+            diamond(wm, sub_coords, i)
+            square(wm, sub_coords, i)
 
-def diamond(a, c, i):
+def diamond(wm, c, i):
     '''
     Set the center of coords to the average of the four corners, plus random 
     noise.
-    a: Array to be operated on
+    wm: Worldmap object to be operated on
     c: Coordinates to be operated on
         (x1, x2, y1, y2)
     i: Int number of iterations    
@@ -59,20 +59,17 @@ def diamond(a, c, i):
     x = math.ceil((c[0] + c[1]) / 2.0)
     y = math.ceil((c[2] + c[3]) / 2.0)
     
-    if a[x, y] == 0.0:
-        corner_a = a[c[0], c[2]]
-        corner_b = a[c[0], c[3]]
-        corner_c = a[c[1], c[2]]
-        corner_d = a[c[1], c[3]]
-        v = (corner_a, corner_b, corner_c, corner_d)
-        v = get_value(v, i)
-        a[x, y] = v
-        #debug, make sure value was changed
-        #if a[x, y] == 0.0:
-        #    print "ERROR: Value not assigned at (%d, %d)" % (x, y)
-        #    assert False 
+    for key in wm.ds_generated:
+        if wm.get((x, y), key) == None:
+            corner_a = wm.get((c[0], c[2]), key)
+            corner_b = wm.get((c[0], c[3]), key)
+            corner_c = wm.get((c[1], c[2]), key)
+            corner_d = wm.get((c[1], c[3]), key)
+            v = (corner_a, corner_b, corner_c, corner_d)
+            v = get_value(v, i)
+            wm.put((x, y), key, v)      
 
-def square(a, c, i):
+def square(wm, c, i):
     '''
     Array a has four sides with midpoints. Perform sub_diamond on each side.
     a: Array to be operated on
@@ -87,7 +84,7 @@ def square(a, c, i):
     subs = [sub_a, sub_b, sub_c, sub_d]
     # for a 1D subarray, diamond works the same as square should.
     for sub in subs:
-        diamond(a, sub, i)
+        diamond(wm, sub, i)
         
 ## Utilities
 
@@ -102,56 +99,53 @@ def get_value(values=1, i=1):
     else:
         v = float(sum(values)) / float(len(values))
     v += random.uniform(-5.0,5.0) / float(i)
-    #debug, make sure we're getting a float back
-    #if type(v) != float:
-    #    print "Error: get_value failed"
-    #    print "\tReturned non-float"
-    #    assert False
     return v
 
 ## Pre-generation functions
 
-def get_array(s):
+def seed_values(wm):
     '''
-    Generate an array based on size s and call get_value on the corners.
-    s: Size tuple of new array.
+    Get values for the corners of the wm array.
+    wm: Worldmap object to operate on.
     '''
-    print "Getting new array..."
-    a = np.zeros((s[0], s[1]))
     print "Seeding corners..."
-    a[0, 0] =       get_value()
-    a[0, -1] =      get_value()
-    a[-1, 0] =      get_value()
-    a[-1, -1] =     get_value()
-    return a
+    for key in wm.ds_generated:
+        wm.put((0, 0), key, get_value())
+        wm.put((0, -1), key, get_value())
+        wm.put((-1, 0), key, get_value())
+        wm.put((-1, -1), key, get_value())
     
 ## Post-generation functions
 
-def scale_array(a):
+def scale_array(wm):
     '''
     Scales all values in the array to 0.0-1.0 floats.
     a: Array to be operated on.
     '''
-    print "Scaling array..."
-    shape = a.shape
-    maximum = None
-    for x in np.nditer(a):
-        if abs(x) > maximum:
-            maximum = abs(x)
-               
-    a = a / (2 * maximum) + 0.5
-    return a
+    # find the maximum for each key
+    max_dict = {}
+    for key in wm.ds_generated:
+        max_dict[key] = None
+        fl = wm.array.flat
+        for item in fl:
+            if abs(item[key]) > max_dict[key]:
+                max_dict[key] = abs(item[key])
+    fl = wm.array.flat
+    for item in fl:
+        for key in wm.ds_generated:
+            item[key] = item[key] / (max_dict[key]*2.0) + 0.5
     
-def build_pxarray(surface, a):
+def build_pxarray(surface, wm, key):
     '''
     Returns a greyscale pxarray based on input array.
     surface: A surface object to add the pxarray to.
-    a: An array with values 0.0-1.0
+    wm: Worldmap object to build from.
+    key: attribute in wm to build from.
     '''
     print "Rendering..."
     pxarray = pygame.PixelArray(surface)
-    
-    for (x, y), v in np.ndenumerate(a):
-        v = v*255
-        pxarray[x, y] = (v, v, v)
-    return pxarray
+    for x in range(wm.shape[0]):
+        for y in range(wm.shape[1]):
+            v = wm.get((x, y), key)*255
+            pxarray[x, y] = (v, v, v)
+            
