@@ -1,7 +1,8 @@
 worldgen
 ========
 
-A world generator
+A world generator, designed to give complete and detailed information about a location with a click.
+
 
 ## Using worldgen
 To use worldgen, enter
