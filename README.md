@@ -3,7 +3,6 @@ worldgen
 
 A world generator, designed for worldbuilders and DMs who want information beyond maps.
 
-
 ## Using worldgen
 To use worldgen, enter
 
