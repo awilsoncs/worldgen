@@ -8,7 +8,7 @@ class AltitudeView(object):
 
     def render(self):
         '''
-        Returns a greyscale pxarray based on input array.
+        Returns a pxarray based on 'altitude' of Worldmap.
         '''
         print "Rendering Altitude"
         surface = self.surface
@@ -31,7 +31,7 @@ class AltitudeView_wOcean(object):
 
     def render(self):
         '''
-        Returns a greyscale pxarray based on input array.
+        Returns a pxarray based on 'altitude' of Worldmap.
         '''
         print "Rendering Altitude with Oceans"
         surface = self.surface
@@ -49,6 +49,5 @@ class AltitudeView_wOcean(object):
                     r = (255 - g) / 2
                     b = g / 2
                 pxarray[x, y] = (r, g, b)
-        del pxarray 
-    
+        del pxarray
     

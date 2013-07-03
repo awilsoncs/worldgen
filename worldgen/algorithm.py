@@ -1,16 +1,16 @@
+import math
 import numpy as np
 import random
-import math
-
+    
 def process(wm):
     '''
-    Populate an wm with values.
+    Populate a Worldmap with values required by ds_generated.
     wm: The Worldmap object to operate on.
     '''
-    s = wm.size
+    s = wm.shape
     i = 1
     seed_corners(wm)
-    seed_seams(wm)
+    sew_seams(wm)
     print "Beginning map..."
     print "This may take a while"
     while s[0] > 2 and s[1] > 2:
@@ -117,7 +117,7 @@ def seed_corners(wm):
         wm.put((-1, 0), key, value_a)
         wm.put((-1, -1), key, value_b)
         
-def seed_seams(wm):
+def sew_seams(wm):
     '''
     Inserts values into the edges of the map to create continuous lines.
     wm: Worldmap object to be operated on.
@@ -125,10 +125,10 @@ def seed_seams(wm):
     print "Sewing seams..."
     
     ## Vertical seams
-    height = wm.size[1]
+    height = wm.shape[1]
     i = 1
     while height > 1:
-        for y in range(0, wm.size[1]-1, height-1):
+        for y in xrange(0, wm.shape[1]-1, height-1):
             for key in wm.ds_generated:
                 top_value = wm.get((0, y), key)
                 bottom_value = wm.get((0, y+height-1), key)                
@@ -138,7 +138,7 @@ def seed_seams(wm):
         i += 1
         height = int(math.ceil(height / 2.0))
     ## Horizonal seams
-    for x in range(wm.size[0]):
+    for x in xrange(wm.shape[0]):
         for key in wm.ds_generated:
             v1 = wm.get((0, 0), key)
             v2 = wm.get((0, -1), key)
@@ -157,12 +157,11 @@ def scale_array(wm):
     max_dict = {}
     for key in wm.ds_generated:
         max_dict[key] = None
-        fl = wm.array.flat
+        fl = wm.flat
         for item in fl:
             if abs(item[key]) > max_dict[key]:
                 max_dict[key] = abs(item[key])
-    fl = wm.array.flat
+    fl = wm.flat
     for item in fl:
         for key in wm.ds_generated:
             item[key] = item[key] / (max_dict[key]*2.0) + 0.5
-            

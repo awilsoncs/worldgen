@@ -1,15 +1,21 @@
 import numpy as np
+from locations import Location
 
-class Worldmap(object):
-    def __init__(self, size):
-        '''
-        size: (x, y) size of the Worldmap.
-        '''
-        self.size = size
-        self.shape = size
-        self.array = np.empty(size, dtype=object)
-        self.ds_generated = ['altitude', 'ore']
-        self.has = ['altitude', 'ore']
+class Worldmap(np.ndarray):
+    def __new__(subtype, shape, dtype=object, buffer=None, offset=0,
+          strides=None, order=None, info=None):
+        obj = np.ndarray.__new__(subtype, shape, dtype, buffer, offset, strides,
+                         order)
+        obj.info = info
+        ## Attributes that should be generated in the DS process.
+        obj.ds_generated = ['altitude']
+        ## All attributes
+        obj.has = ['altitude']
+        return obj
+
+    def __array_finalize__(self, obj):
+        if obj is None: return
+        self.info = getattr(obj, 'info', None)
     
     def get(self, (x, y), get_by):
         '''
@@ -17,10 +23,10 @@ class Worldmap(object):
         (x, y): The int coordinates to search.
         get_by: String to search the dict by.
         '''
-        if self.array[x, y] == None:
-            self.array[x, y] = {}
-        if self.array[x, y].has_key(get_by):
-            return self.array[x, y][get_by]
+        if self[x, y] == None:
+            self[x, y] = Location((x, y))
+        if self[x, y].has_key(get_by):
+            return self[x, y][get_by]
         else:
             return None
         
@@ -30,7 +36,14 @@ class Worldmap(object):
         (x, y): The int coordinates to place the values.
         **kwargs: Additional values to place at the coordinates.
         '''
-        if self.array[x, y] == None:
-            self.array[x, y] = dict()
+        if self[x, y] == None:
+            self[x, y] = Location((x, y))
         if key in self.has:
-            self.array[x, y].update({key : value})
+            self[x, y].update({key : value})
+
+    def iter(self, key):
+        '''
+        Iterates across the worldmap, yielding values for each location.
+        '''
+        for (x, y), value in np.ndenumerate(self):
+            yield self[x, y]['key']
