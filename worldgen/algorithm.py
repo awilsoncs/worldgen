@@ -60,19 +60,20 @@ def diamond(wm, c, i):
     y = math.ceil((c[2] + c[3]) / 2.0)
     
     for key in wm.ds_generated:
-        if wm.get((x, y), key) == None:
+        if wm[x, y] == None or wm[x, y].locked == False:
             corner_a = wm.get((c[0], c[2]), key)
             corner_b = wm.get((c[0], c[3]), key)
             corner_c = wm.get((c[1], c[2]), key)
             corner_d = wm.get((c[1], c[3]), key)
             v = (corner_a, corner_b, corner_c, corner_d)
             v = get_value(v, i)
-            wm.put((x, y), key, v)      
+            wm.put((x, y), key, v) 
+    wm[x, y].locked = True     
 
 def square(wm, c, i):
     '''
     Array a has four sides with midpoints. Perform sub_diamond on each side.
-    a: Array to be operated on
+    wm: The Worldmap object to operate.
     c: Coordinates to be operated on
         (x1, x2, y1, y2)
     i: Int number of iterations    
@@ -135,6 +136,8 @@ def sew_seams(wm):
                 v = get_value((top_value, bottom_value), i)
                 wm.put((0, y + height / 2), key, v)
                 wm.put((-1, y + height / 2), key, v)
+            wm[0, y].locked = True
+            wm[-1, y].locked = True
         i += 1
         height = int(math.ceil(height / 2.0))
     ## Horizonal seams
@@ -145,6 +148,8 @@ def sew_seams(wm):
             
             wm.put((x, 0), key, v1)
             wm.put((x, -1), key, v2)
+        wm[x, 0].locked = True
+        wm[x, -1].locked = True
     
 ## Post-generation functions
 

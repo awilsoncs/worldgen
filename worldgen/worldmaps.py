@@ -38,12 +38,5 @@ class Worldmap(np.ndarray):
         '''
         if self[x, y] == None:
             self[x, y] = Location((x, y))
-        if key in self.has:
+        if self[x, y].locked == False:
             self[x, y].update({key : value})
-
-    def iter(self, key):
-        '''
-        Iterates across the worldmap, yielding values for each location.
-        '''
-        for (x, y), value in np.ndenumerate(self):
-            yield self[x, y]['key']
