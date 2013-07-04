@@ -61,10 +61,10 @@ def diamond(wm, c, i):
     
     for key in wm.ds_generated:
         if wm[x, y] == None or wm[x, y].locked == False:
-            corner_a = wm.get((c[0], c[2]), key)
-            corner_b = wm.get((c[0], c[3]), key)
-            corner_c = wm.get((c[1], c[2]), key)
-            corner_d = wm.get((c[1], c[3]), key)
+            corner_a = wm[c[0], c[2]][key]
+            corner_b = wm[c[0], c[3]][key]
+            corner_c = wm[c[1], c[2]][key]
+            corner_d = wm[c[1], c[3]][key]
             v = (corner_a, corner_b, corner_c, corner_d)
             v = get_value(v, i)
             wm.put((x, y), key, v) 
@@ -131,13 +131,17 @@ def sew_seams(wm):
     while height > 1:
         for y in xrange(0, wm.shape[1]-1, height-1):
             for key in wm.ds_generated:
-                top_value = wm.get((0, y), key)
-                bottom_value = wm.get((0, y+height-1), key)                
+                top_value =    wm[0, y][key]
+                bottom_value = wm[0, y+height-1][key]  
+
                 v = get_value((top_value, bottom_value), i)
+                
                 wm.put((0, y + height / 2), key, v)
                 wm.put((-1, y + height / 2), key, v)
+            
             wm[0, y].locked = True
             wm[-1, y].locked = True
+        
         i += 1
         height = int(math.ceil(height / 2.0))
     ## Horizonal seams
