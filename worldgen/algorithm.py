@@ -145,10 +145,12 @@ def sew_seams(wm):
         i += 1
         height = int(math.ceil(height / 2.0))
     ## Horizonal seams
+    north_loc = wm[0, 0]
+    south_loc = wm[0, -1]
     for x in xrange(wm.shape[0]):
         for key in wm.ds_generated:
-            v1 = wm.get((0, 0), key)
-            v2 = wm.get((0, -1), key)
+            v1 = north_loc[key]
+            v2 = south_loc[key]
             
             wm.put((x, 0), key, v1)
             wm.put((x, -1), key, v2)
@@ -162,15 +164,21 @@ def scale_array(wm):
     Scales all values in the array to 0.0-1.0 floats.
     a: Array to be operated on.
     '''
-    # find the maximum for each key
+    # find the min/max for each key
     max_dict = {}
+    min_dict = {}
+
     for key in wm.ds_generated:
-        max_dict[key] = None
-        fl = wm.flat
-        for item in fl:
-            if abs(item[key]) > max_dict[key]:
-                max_dict[key] = abs(item[key])
-    fl = wm.flat
-    for item in fl:
+        for (x, y), location in np.ndenumerate(wm):
+            if key not in max_dict or location[key] > max_dict[key]:
+                max_dict[key] = location[key]
+            if key not in min_dict or location[key] < min_dict[key]:
+                min_dict[key] = location[key]
+    
+    # Adjust the values
+    for (x, y), location in np.ndenumerate(wm):
         for key in wm.ds_generated:
-            item[key] = item[key] / (max_dict[key]*2.0) + 0.5
+            value = location[key] + abs(min_dict[key])
+            value = value / (max_dict[key] + abs(min_dict[key]))
+            print value
+            location[key] = value
