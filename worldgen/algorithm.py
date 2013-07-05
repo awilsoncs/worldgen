@@ -162,7 +162,7 @@ def sew_seams(wm):
 def scale_array(wm):
     '''
     Scales all values in the array to 0.0-1.0 floats.
-    a: Array to be operated on.
+    wm: Worldmap object to be operated on.
     '''
     # find the min/max for each key
     max_dict = {}
@@ -180,5 +180,4 @@ def scale_array(wm):
         for key in wm.ds_generated:
             value = location[key] + abs(min_dict[key])
             value = value / (max_dict[key] + abs(min_dict[key]))
-            print value
             location[key] = value

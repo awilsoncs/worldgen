@@ -23,7 +23,3 @@ Also, the up and down keys will re-render the map higher and lower oceans, respe
 ## Major Goals for 0.1:
 
 - [ ] Add a variable to control the smoothness of the map, so that I can also add a function to variably smooth some areas more than others.
-
-- [ ] Add bitmap output for Views
-
-- [ ] Add keyboard control to __main__.py
