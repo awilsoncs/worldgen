@@ -168,8 +168,8 @@ def scale_array(wm):
     max_dict = {}
     min_dict = {}
 
-    for key in wm.ds_generated:
-        for (x, y), location in np.ndenumerate(wm):
+    for (x, y), location in np.ndenumerate(wm):
+        for key in wm.ds_generated:
             if key not in max_dict or location[key] > max_dict[key]:
                 max_dict[key] = location[key]
             if key not in min_dict or location[key] < min_dict[key]:
@@ -178,6 +178,6 @@ def scale_array(wm):
     # Adjust the values
     for (x, y), location in np.ndenumerate(wm):
         for key in wm.ds_generated:
-            value = location[key] + abs(min_dict[key])
-            value = value / (max_dict[key] + abs(min_dict[key]))
+            value = location[key] - min_dict[key]
+            value = value / (max_dict[key] - min_dict[key])
             location[key] = value
