@@ -42,6 +42,13 @@ class Worldmap(np.ndarray):
             self[x, y].update({key : value})
 
     def wmiter(self, x_range=(0, -1), y_range=(0, -1), step=(1, 1)):
+        '''
+        Improves upon ndenumerate by iterating through a slice of the
+        array, and taking steps.
+        x_range: The range of x to slice.
+        y_range: The range of y to slice.
+        step: Steps between yields, in (x, y)
+        '''
         x_min = x_range[0]
         x_max = x_range[1]
         y_min = y_range[0]
@@ -55,5 +62,5 @@ class Worldmap(np.ndarray):
             y_max = self.shape[1] + y_max + 1
 
         for (x, y), loc in np.ndenumerate(self[x_min:x_max, y_min:y_max]):
-            if x % x_step == 0 and y + 1 % y_step == 0:
+            if x % x_step == 0 and y % y_step == 0:
                 yield (x, y), loc

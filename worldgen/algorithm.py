@@ -36,16 +36,14 @@ def step(wm, s, i):
     shape = wm.shape
     ## DS requires that the first line of each square is the last line of the
     ## previous square.
-    square_x = s[0]-1
-    square_y = s[1]-1
+    
+    box = (s[0]-1, s[1]-1)
     ## This leaves an additional column, so iterate one short.
-        
-    for x in xrange(0, shape[0]-1, square_x):
-        for y in xrange(0, shape[1]-1, square_y):
-            sub_coords = (x, x+square_x, y, y+square_y)
-
-            diamond(wm, sub_coords, i)
-            square(wm, sub_coords, i)
+    
+    for (x, y), loc in wm.wmiter((0, -2), (0, -2), box):
+        sub_coords = (x, x+box[0], y, y+box[1])
+        diamond(wm, sub_coords, i)
+        square(wm, sub_coords, i)
 
 def diamond(wm, c, i):
     '''
@@ -130,21 +128,20 @@ def sew_seams(wm):
     height = wm.shape[1]
     i = 1
     while height > 1:
-        for y in xrange(0, wm.shape[1]-1, height-1):
+        box = (1, height-1)
+        for (x, y), loc in wm.wmiter((0, 1), (0, -2), box):
             for key in wm.ds_generated:
-                top_value =    wm[0, y][key]
-                bottom_value = wm[0, y+height-1][key]  
+                top_value = loc[key]
+                bottom_value = wm[0, y+box[1]][key]
 
                 v = get_value((top_value, bottom_value), i)
-                
                 wm.put((0, y + height / 2), key, v)
                 wm.put((-1, y + height / 2), key, v)
-            
             wm[0, y].locked = True
             wm[-1, y].locked = True
-        
         i += 1
         height = int(math.ceil(height / 2.0))
+
     ## Horizonal seams
     north_loc = wm[0, 0]
     south_loc = wm[0, -1]
