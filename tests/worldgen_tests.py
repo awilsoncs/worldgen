@@ -1,7 +1,7 @@
 from nose.tools import *
 import worldgen
 import worldgen.worldmaps as worldmaps
-import worldgen.algorithm as algorithm
+import worldgen.dsprocess as dsprocess
 import worldgen.locations as locations
 import numpy as np
 
@@ -16,7 +16,7 @@ def worldmap_arrays_test():
     #of values.
     shape = (5, 5)
     wm = worldmaps.Worldmap(shape)
-    algorithm.process(wm)
+    dsprocess.process(wm)
     for x in range(shape[0]):
         for y in range(shape[1]):
             v = wm[x, y]
@@ -26,7 +26,7 @@ def worldmap_arrays_test():
 def east_west_matching_test():
     shape = (5, 5)
     wm = worldmaps.Worldmap(shape)
-    algorithm.process(wm)
+    dsprocess.process(wm)
     for y in range(wm.shape[1]):
         east_v = wm[0, y]['altitude']
         west_v = wm[wm.shape[0]-1, y]['altitude']
@@ -38,7 +38,7 @@ def east_west_matching_test():
 def north_south_matching_test():
     shape = (5, 5)
     wm = worldmaps.Worldmap(shape)
-    algorithm.process(wm)
+    dsprocess.process(wm)
 
     north_value = wm[0, 0]['altitude']
     south_value = wm[0, -1]['altitude']
@@ -49,10 +49,10 @@ def north_south_matching_test():
         if wm[x, -1]['altitude'] != south_value:
             assert False, "Horizontal lines not matching."
 
-def algorithm_scale_test():
+def dsprocess_scale_test():
     shape = (5, 5)
     wm = worldmaps.Worldmap(shape)
-    algorithm.process(wm)
+    dsprocess.process(wm)
 
     max_dict = {}
     min_dict = {}

@@ -4,7 +4,7 @@ import math
 import time
 
 ## Local modules
-import algorithm
+import dsprocess
 import worldmaps
 import views
 
@@ -28,7 +28,7 @@ if math.log(x-1, 2) % 1 != 0.0 or math.log(y-1, 2) % 1 != 0.0:
 ## Run the code
 window = pygame.display.set_mode(size)
 wm = worldmaps.Worldmap(size)
-wm = algorithm.process(wm)
+wm = dsprocess.process(wm)
 depth = 0.7
 altview = views.AltitudeView_wOcean(window, wm, depth)
 altview.render()
