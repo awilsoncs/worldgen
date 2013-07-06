@@ -89,7 +89,7 @@ def square(wm, c, i):
         
 ## Utilities
 
-def get_value(values=1, i=1):
+def get_value(values=1, i=1, smooth=1):
     '''
     Returns float average of values +- an amount of random noise based on i.
     values: Tuple of values to be averaged.
@@ -99,7 +99,8 @@ def get_value(values=1, i=1):
         v = values
     else:
         v = float(sum(values)) / float(len(values))
-    v += random.uniform(-5.0,5.0) / float(i)
+    vary = smooth * 5.0;
+    v += random.uniform(-vary,vary) / float(i)
     return v
 
 ## Pre-generation functions

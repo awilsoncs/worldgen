@@ -65,7 +65,7 @@ def algorithm_scale_test():
     for value in max_dict.itervalues():
         assert value == 1, "Found non-one maximum."
     for value in min_dict.itervalues():
-        assert value == 0.0, "Found non-zero minimum."
+        assert value == 0.0, "Found non-zero maximum."
 
 def location_init_test():
     coords = (2,4)
