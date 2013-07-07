@@ -174,4 +174,27 @@ def scale_array(wm):
         for key in wm.ds_generated:
             value = location[key] - min_dict[key]
             value = value / (max_dict[key] - min_dict[key])
-            location[key] = value
+            if key == 'altitude':
+                location[key] = elevation(value)
+            else:
+                location[key] = value
+
+def elevation(x):
+    x = elevation_central(x) + elevation_end(x)
+    if x > 1.0:
+        x = math.floor(x)
+    return x
+def elevation_central(x):
+    x = x / 4.0 - 0.125
+    ## if x is negative, python won't like the math:
+    if x < 0:
+        ## Real root: 
+        ## (-x)**3 = -(x)**3
+        x = (-x)**(1.0/3.0)
+        x = -x
+    else:
+        x = x**(1.0/3.0)
+    return (0.5) + (0.25) * x
+def elevation_end(x):
+    x = (27.0 / 64.0) * (2*x - 1)**5 + 3.0 / 64.0
+    return x

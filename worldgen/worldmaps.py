@@ -41,6 +41,17 @@ class Worldmap(np.ndarray):
         if self[x, y].locked == False:
             self[x, y].update({key : value})
 
+    def add(self, (x, y), key, value):
+        '''
+        As put, but adds to the current value instead of replacing.
+        '''
+        if self[x, y] == None:
+            self[x, y] = Location((x, y))
+        if self[x, y].locked == False:
+            if key in self[x, y]:
+                value += self.get((x, y), key)
+            self.put((x, y), key, value)
+
     def wmiter(self, x_range=(0, -1), y_range=(0, -1), step=(1, 1)):
         '''
         Improves upon ndenumerate by iterating through a slice of the

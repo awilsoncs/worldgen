@@ -29,7 +29,7 @@ if math.log(x-1, 2) % 1 != 0.0 or math.log(y-1, 2) % 1 != 0.0:
 window = pygame.display.set_mode(size)
 wm = worldmaps.Worldmap(size)
 wm = dsprocess.process(wm)
-depth = 0.7
+depth = 0.6
 altview = views.AltitudeView_wOcean(window, wm, depth)
 altview.render()
 pygame.display.flip()
@@ -42,12 +42,12 @@ while True:
             sys.exit(0) 
         elif event.type == pygame.KEYDOWN:
             if event.key == 273: #up key
-                depth += 0.1
+                depth += 0.05
                 altview = views.AltitudeView_wOcean(window, wm, depth)
                 altview.render()
                 pygame.display.flip()    
             elif event.key == 274: #down key
-                depth -= 0.1
+                depth -= 0.05
                 altview = views.AltitudeView_wOcean(window, wm, depth)
                 altview.render()
                 pygame.display.flip()

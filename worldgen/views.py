@@ -31,7 +31,7 @@ class AltitudeView(MapView):
         for (x, y), loc in np.ndenumerate(self.wm):
             g = loc[self.key]*255
             r = (255 - g) / 2
-            b = g / 2
+            b = g / 4
             pxarray[x, y] = (r, g, b)
 
 class AltitudeView_wOcean(MapView):
