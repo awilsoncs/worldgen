@@ -8,9 +8,9 @@ class Worldmap(np.ndarray):
                          order)
         obj.info = info
         ## Attributes that should be generated in the DS process.
-        obj.ds_generated = ['smoothness','altitude']
+        obj.ds_generated = ['smoothness', 'elevation']
         ## All attributes
-        obj.has = ['smoothness','altitude']
+        obj.has = ['smoothness', 'elevation']
         return obj
 
     def __array_finalize__(self, obj):

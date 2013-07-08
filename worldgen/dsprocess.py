@@ -174,7 +174,7 @@ def scale_array(wm):
         for key in wm.ds_generated:
             value = location[key] - min_dict[key]
             value = value / (max_dict[key] - min_dict[key])
-            if key == 'altitude':
+            if key == 'elevation':
                 location[key] = elevation(value)
             else:
                 location[key] = value

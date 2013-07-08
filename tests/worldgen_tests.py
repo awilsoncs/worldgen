@@ -28,8 +28,8 @@ def east_west_matching_test():
     wm = worldmaps.Worldmap(shape)
     dsprocess.process(wm)
     for y in range(wm.shape[1]):
-        east_v = wm[0, y]['altitude']
-        west_v = wm[wm.shape[0]-1, y]['altitude']
+        east_v = wm[0, y]['elevation']
+        west_v = wm[wm.shape[0]-1, y]['elevation']
         if east_v != west_v:
             print "Found value at (%r, %r): %r" % (0, y, east_v)
             print "And value at (%r, %r): %r" % (wm.shape[0]-1, y, west_v)
@@ -40,13 +40,13 @@ def north_south_matching_test():
     wm = worldmaps.Worldmap(shape)
     dsprocess.process(wm)
 
-    north_value = wm[0, 0]['altitude']
-    south_value = wm[0, -1]['altitude']
+    north_value = wm[0, 0]['elevation']
+    south_value = wm[0, -1]['elevation']
     
     for x in range(wm.shape[0]):
-        if wm[x, 0]['altitude'] != north_value:
+        if wm[x, 0]['elevation'] != north_value:
             assert False, "Horizontal lines not matching."
-        if wm[x, -1]['altitude'] != south_value:
+        if wm[x, -1]['elevation'] != south_value:
             assert False, "Horizontal lines not matching."
 
 def dsprocess_scale_test():
