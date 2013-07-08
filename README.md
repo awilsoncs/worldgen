@@ -20,6 +20,6 @@ Also, the up and down keys will re-render the map higher and lower oceans, respe
 
 - [ ] Update docstrings to reflect current operation.
 
-## Major Goals for 0.1:
+## Major Goals for 0.2:
 
-- [ ] Add a variable to control the smoothness of the map, so that I can also add a function to variably smooth some areas more than others.
+- [ ] Create a simplified plate tectonics simulation.
