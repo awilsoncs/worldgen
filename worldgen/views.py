@@ -87,5 +87,3 @@ class ContourView(AltitudeView_wOcean):
             elif v > self.depth + .35:
                 r,g,b = 220, 220, 220
             pxarray[x, y] = (r, g, b)
-
-
