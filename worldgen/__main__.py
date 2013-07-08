@@ -30,7 +30,7 @@ window = pygame.display.set_mode(size)
 wm = worldmaps.Worldmap(size)
 wm = dsprocess.process(wm)
 depth = 0.6
-altview = views.AltitudeView_wOcean(window, wm, depth)
+altview = views.ContourView(window, wm, depth)
 altview.render()
 pygame.display.flip()
 
@@ -43,12 +43,12 @@ while True:
         elif event.type == pygame.KEYDOWN:
             if event.key == 273: #up key
                 depth += 0.05
-                altview = views.AltitudeView_wOcean(window, wm, depth)
+                altview = views.ContourView(window, wm, depth)
                 altview.render()
                 pygame.display.flip()    
             elif event.key == 274: #down key
                 depth -= 0.05
-                altview = views.AltitudeView_wOcean(window, wm, depth)
+                altview = views.ContourView(window, wm, depth)
                 altview.render()
                 pygame.display.flip()
             
