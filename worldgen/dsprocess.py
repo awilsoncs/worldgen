@@ -69,7 +69,7 @@ def diamond(wm, c, i):
             else:
                 smoothness = wm[x, y]['smoothness']
                 v = get_value(v, i, smoothness)
-            wm.put((x, y), key, v) 
+            wm.add((x, y), key, v) 
     wm[x, y].locked = True     
 
 def square(wm, c, i):
@@ -116,10 +116,10 @@ def seed_corners(wm):
     for key in wm.ds_generated:
         value_a = get_value()
         value_b = get_value()
-        wm.put((0, 0), key, value_a)
-        wm.put((0, -1), key, value_b)
-        wm.put((-1, 0), key, value_a)
-        wm.put((-1, -1), key, value_b)
+        wm.add((0, 0), key, value_a)
+        wm.add((0, -1), key, value_b)
+        wm.add((-1, 0), key, value_a)
+        wm.add((-1, -1), key, value_b)
     wm[0, 0].locked = True
     wm[0, -1].locked = True
     wm[-1, 0].locked = True
