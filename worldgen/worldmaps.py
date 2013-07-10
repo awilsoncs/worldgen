@@ -4,11 +4,13 @@ from locations import Location
 class Worldmap(np.ndarray):
     def __new__(subtype, shape, dtype=object, buffer=None, offset=0,
           strides=None, order=None, info=None):
-        obj = np.ndarray.__new__(subtype, shape, dtype, buffer, offset, strides,
-                         order)
+        obj = np.ndarray.__new__(subtype, shape, dtype, buffer, offset,
+                                strides, order)
         obj.info = info
         ## Attributes that should be generated in the DS process.
-        obj.ds_generated = ['smoothness', 'elevation', 'volcanism']
+        obj.ds_generated = ['smoothness', 'elevation', 'volcanism',
+                            'solubility', 'precious_minerals', 
+                            'economic_minerals']
         return obj
 
     def __array_finalize__(self, obj):
@@ -16,8 +18,7 @@ class Worldmap(np.ndarray):
         self.info = getattr(obj, 'info', None)
     
     def get(self, (x, y), get_by):
-        '''
-        Returns the value for attribute get_by at (x, y).
+        '''Returns the value for attribute get_by at (x, y).
         (x, y): The int coordinates to search.
         get_by: String to search the dict by.
         '''
@@ -29,8 +30,7 @@ class Worldmap(np.ndarray):
             return None
         
     def put(self, (x, y), key, value):
-        '''
-        Places the given kwargs in the map at (x, y).
+        '''Places the given kwargs in the map at (x, y).
         (x, y): The int coordinates to place the values.
         **kwargs: Additional values to place at the coordinates.
         '''
@@ -40,8 +40,7 @@ class Worldmap(np.ndarray):
             self[x, y].update({key : value})
 
     def add(self, (x, y), key, value):
-        '''
-        As put, but adds to the current value instead of replacing.
+        '''As put, but adds to the current value instead of replacing.
         '''
         if self[x, y] == None:
             self[x, y] = Location((x, y))
@@ -51,8 +50,7 @@ class Worldmap(np.ndarray):
             self.put((x, y), key, value)
 
     def wmiter(self, x_range=(0, -1), y_range=(0, -1), step=(1, 1)):
-        '''
-        Improves upon ndenumerate by iterating through a slice of the
+        '''Improves upon ndenumerate by iterating through a slice of the
         array, and taking steps.
         x_range: The range of x to slice.
         y_range: The range of y to slice.
@@ -73,3 +71,22 @@ class Worldmap(np.ndarray):
         for (x, y), loc in np.ndenumerate(self[x_min:x_max, y_min:y_max]):
             if x % x_step == 0 and y % y_step == 0:
                 yield (x, y), loc
+
+def local_max(a, key):
+    """Given an array and a key, return the maximum and its coords."""
+    coords = None
+    v = None
+    for loc, value in np.ndenumerate(a):
+        if value[key] > v:
+            v = value[key]
+            coords = loc
+    return coords, v
+
+def local_min(a, key):
+    """Given an array and a key, return the minimum and its coords."""
+    coords = None
+    v = None
+    for loc, value in np.ndenumerate(a):
+        if value[key] < v:
+            coords = loc
+    return coords, v
