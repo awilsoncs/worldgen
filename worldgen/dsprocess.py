@@ -4,10 +4,9 @@ import numpy as np
 import random
     
 def process(wm):
-    '''
-    Populate a Worldmap with values required by ds_generated.
+    """Populate a Worldmap with values required by ds_generated.
     wm: The Worldmap object to operate on.
-    '''
+    """
     s = wm.shape
     i = 1
     seed_corners(wm)
@@ -27,12 +26,11 @@ def process(wm):
     return wm
 
 def step(wm, s, i):
-    '''
-    Process one step of Diamond/Square algorithm.
+    """Process one step of Diamond/Square algorithm.
     wm: Worldmap object to be operated on
     s: The size tuple of the operating square
     i: Int number of iterations
-    '''
+    """
     print "."
     shape = wm.shape
     ## DS requires that the first line of each square is the last line of the
@@ -46,14 +44,13 @@ def step(wm, s, i):
         square(wm, sub_coords, i)
 
 def diamond(wm, c, i):
-    '''
-    Set the center of coords to the average of the four corners, plus random 
-    noise.
+    """Set the center of coords to the average of the four corners, plus
+    random noise.
     wm: Worldmap object to be operated on
     c: Coordinates to be operated on
         (x1, x2, y1, y2)
     i: Int number of iterations    
-    '''
+    """
     x = math.ceil((c[0] + c[1]) / 2.0)
     y = math.ceil((c[2] + c[3]) / 2.0)
     
@@ -73,13 +70,13 @@ def diamond(wm, c, i):
     wm[x, y].locked = True     
 
 def square(wm, c, i):
-    '''
-    Array a has four sides with midpoints. Perform sub_diamond on each side.
+    """Array a has four sides with midpoints. Perform sub_diamond on each 
+    side.
     wm: The Worldmap object to operate.
     c: Coordinates to be operated on
         (x1, x2, y1, y2)
     i: Int number of iterations    
-    '''
+    """
     sub_a = (c[0], c[1], c[2], c[2])
     sub_b = (c[0], c[1], c[3], c[3])
     sub_c = (c[0], c[0], c[2], c[3])
@@ -92,11 +89,10 @@ def square(wm, c, i):
 ## Utilities
 
 def get_value(values=1, i=1, smooth=1):
-    '''
-    Returns float average of values +- an amount of random noise based on i.
+    """Returns float average of values +- an amount of random noise based on i.
     values: Tuple of values to be averaged.
     i: Int number of iterations
-    '''
+    """
     if type(values) == int:
         v = values
     else:
@@ -108,10 +104,9 @@ def get_value(values=1, i=1, smooth=1):
 ## Pre-generation functions
 
 def seed_corners(wm):
-    '''
-    Get values for the corners of the wm array.
+    """Get values for the corners of the wm array.
     wm: Worldmap object to operate on.
-    '''
+    """
     print "Seeding corners..."
     for key in wm.ds_generated:
         value_a = get_value()
@@ -126,10 +121,9 @@ def seed_corners(wm):
     wm[-1, -1].locked = True
 
 def sew_seams(wm):
-    '''
-    Inserts values into the edges of the map to create continuous lines.
+    """Inserts values into the edges of the map to create continuous lines.
     wm: Worldmap object to be operated on.
-    '''
+    """
     print "Sewing seams..."
     
     ## Vertical seams
@@ -154,10 +148,9 @@ def sew_seams(wm):
 ## Post-generation functions
 
 def scale_array(wm):
-    '''
-    Scales all values in the array to 0.0-1.0 floats.
+    """Scales all values in the array to 0.0-1.0 floats.
     wm: Worldmap object to be operated on.
-    '''
+    """
     # find the min/max for each key
     max_dict = {}
     min_dict = {}
@@ -184,6 +177,7 @@ def elevation(x):
     if x > 1.0:
         x = math.floor(x)
     return x
+
 def elevation_central(x):
     x = x / 4.0 - 0.125
     ## if x is negative, python won't like the math:
@@ -195,6 +189,7 @@ def elevation_central(x):
     else:
         x = x**(1.0/3.0)
     return (0.5) + (0.25) * x
+
 def elevation_end(x):
     x = (27.0 / 64.0) * (2*x - 1)**5 + 3.0 / 64.0
     return x

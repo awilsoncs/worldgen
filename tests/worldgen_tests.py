@@ -93,3 +93,11 @@ def local_max_test():
     coords, v = worldmaps.local_max(wm, 'elevation')
     if v != 1.0:
         assert False, "local max test failed"
+
+def get_test():
+    shape = (5, 5)
+    wm = worldmaps.Worldmap(shape)
+    dsprocess.process(wm)
+    a = wm.get_view('elevation')
+    if not isinstance(a[0, 0], float):
+        assert False, "get test failed"

@@ -52,8 +52,3 @@ while True:
                 altview.render()
                 pygame.display.flip()
             
-            
-            
-            
-            
-            

@@ -17,11 +17,18 @@ class Worldmap(np.ndarray):
         if obj is None: return
         self.info = getattr(obj, 'info', None)
     
+    def get_view(self, key):
+        """Returns an array of values based on the key"""
+        a = np.empty(self.shape)
+        for (x, y), v in np.ndenumerate(self):
+            a[x, y] = v[key]
+        return a
+
     def get(self, (x, y), get_by):
-        '''Returns the value for attribute get_by at (x, y).
+        """Returns the value for attribute get_by at (x, y).
         (x, y): The int coordinates to search.
         get_by: String to search the dict by.
-        '''
+        """
         if self[x, y] == None:
             self[x, y] = Location((x, y))
         if self[x, y].has_key(get_by):
@@ -30,18 +37,18 @@ class Worldmap(np.ndarray):
             return None
         
     def put(self, (x, y), key, value):
-        '''Places the given kwargs in the map at (x, y).
+        """Places the given kwargs in the map at (x, y).
         (x, y): The int coordinates to place the values.
         **kwargs: Additional values to place at the coordinates.
-        '''
+        """
         if self[x, y] == None:
             self[x, y] = Location((x, y))
         if self[x, y].locked == False:
             self[x, y].update({key : value})
 
     def add(self, (x, y), key, value):
-        '''As put, but adds to the current value instead of replacing.
-        '''
+        """As put, but adds to the current value instead of replacing.
+        """
         if self[x, y] == None:
             self[x, y] = Location((x, y))
         if self[x, y].locked == False:
@@ -50,12 +57,12 @@ class Worldmap(np.ndarray):
             self.put((x, y), key, value)
 
     def wmiter(self, x_range=(0, -1), y_range=(0, -1), step=(1, 1)):
-        '''Improves upon ndenumerate by iterating through a slice of the
+        """Improves upon ndenumerate by iterating through a slice of the
         array, and taking steps.
         x_range: The range of x to slice.
         y_range: The range of y to slice.
         step: Steps between yields, in (x, y)
-        '''
+        """
         x_min = x_range[0]
         x_max = x_range[1]
         y_min = y_range[0]
