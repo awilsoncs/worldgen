@@ -56,7 +56,7 @@ def dsprocess_scale_test():
 
     max_dict = {}
     min_dict = {}
-    for key in wm.has:
+    for key in wm.ds_generated:
         for (x, y), value in np.ndenumerate(wm):
             if key not in max_dict or wm[x, y][key] > max_dict[key]:
                 max_dict[key] = wm[x, y][key]

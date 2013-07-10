@@ -3,10 +3,9 @@ import worldmaps
 import numpy as np
 
 class MapView(object):
-    def __init__(self, surface, worldmap, key):
+    def __init__(self, surface, worldmap):
         self.wm = worldmap
         self.surface = surface
-        self.key = key
     
     def render(self):
         '''
@@ -22,7 +21,8 @@ class MapView(object):
 
 class ElevationView(MapView):
     def __init__(self, surface, worldmap):
-        MapView.__init__(surface, worldmap, key='elevation')
+        MapView.__init__(surface, worldmap)
+        self.key = 'elevation'
 
     def paint(self, pxarray):
         '''
@@ -36,7 +36,8 @@ class ElevationView(MapView):
 
 class ElevationView_wOcean(MapView):
     def __init__(self, surface, worldmap, depth):
-        MapView.__init__(self, surface, worldmap, key='elevation')
+        MapView.__init__(self, surface, worldmap)
+        self.key = 'elevation'
         self.depth = depth
 
     def paint(self, pxarray):
@@ -86,4 +87,15 @@ class ContourView(ElevationView_wOcean):
                 r,g,b = 200, 25, 0
             elif v > self.depth + .35:
                 r,g,b = 220, 25, 0
+            pxarray[x, y] = (r, g, b)
+
+class VolcanoChance(MapView):
+    def __init__(self, surface, worldmap):
+        MapView.__init__(self, surface, worldmap)
+
+    def paint(self, pxarray):
+        for (x, y), loc in np.ndenumerate(self.wm):
+            r = loc['volcanism'] * 255
+            g = loc['elevation'] * 255
+            b = loc['smoothness'] * 255
             pxarray[x, y] = (r, g, b)
