@@ -13,13 +13,6 @@ def process(wm):
     sew_seams(wm)
     print "Beginning map..."
     print "This may take a while"
-    while s[0] > 2 and s[1] > 2:
-        step(wm, s, i)
-        x = int(math.ceil(s[0] / 2.0))
-        y = int(math.ceil(s[1] / 2.0))
-        s = (x, y)
-        i += 1
-    print "Final pass..."
     step(wm, s, i)
     # Finalize the array
     scale_array(wm)
@@ -35,11 +28,13 @@ def step(wm, s, i):
     shape = wm.shape
     ## DS requires that the first line of each square is the last line of the
     ## previous square.
-    
-    box = (s[0]-1, s[1]-1)
-    ## This leaves an additional column, so iterate one short.
-    for (x, y), loc in wm.wmiter((0, -2), (0, -2), box):
-        sub_coords = (x, x + box[0], y, y + box[1])
+
+    for coords in wm.midpoint_iter():
+        x1, x2 = coords[0], coords[1]
+        y1, y2 = coords[2], coords[3]
+        sub_coords = (x1, x2, y1, y2)
+        i = coords[4]
+
         diamond(wm, sub_coords, i)
         square(wm, sub_coords, i)
 
@@ -53,7 +48,6 @@ def diamond(wm, c, i):
     """
     x = math.ceil((c[0] + c[1]) / 2.0)
     y = math.ceil((c[2] + c[3]) / 2.0)
-    
     if wm[x, y] == None or wm[x, y].locked == False:
         for key in wm.ds_generated:
             corner_a = wm[c[0], c[2]][key]
@@ -67,7 +61,7 @@ def diamond(wm, c, i):
                 smoothness = wm[x, y]['smoothness']
                 v = get_value(v, i, smoothness)
             wm.add((x, y), key, v) 
-    wm[x, y].locked = True     
+        wm[x, y].locked = True     
 
 def square(wm, c, i):
     """Array a has four sides with midpoints. Perform sub_diamond on each 
@@ -152,6 +146,7 @@ def scale_array(wm):
     wm: Worldmap object to be operated on.
     """
     # find the min/max for each key
+    print "Scaling array..."
     max_dict = {}
     min_dict = {}
 
