@@ -62,6 +62,7 @@ class Worldmap(np.ndarray):
         x_range: The range of x to slice.
         y_range: The range of y to slice.
         step: Steps between yields, in (x, y)
+        locked: If True return locked locs.
         """
         x_min = x_range[0]
         x_max = x_range[1]
@@ -78,6 +79,39 @@ class Worldmap(np.ndarray):
         for (x, y), loc in np.ndenumerate(self[x_min:x_max, y_min:y_max]):
             if x % x_step == 0 and y % y_step == 0:
                 yield (x, y), loc
+
+    def midpoint_iter(self, x_range=(0, -1), y_range=(0, -1), iteration=1):
+        x_min = x_range[0]
+        x_max = x_range[1]
+        y_min = y_range[0]
+        y_max = y_range[1]
+
+        if x_max < 0:
+            x_max = self.shape[0] + x_max
+        if y_max < 0:
+            y_max = self.shape[1] + y_max
+        if x_min < x_max - 1 or y_min < y_max - 1:
+            yield (x_min, x_max, y_min, y_max, iteration)
+            for output in self.midpoint_iter(
+                    x_range = (x_min, (x_max + x_min) / 2),
+                    y_range = (y_min, (y_max + y_min) / 2),
+                    iteration = iteration + 1):
+                yield output
+            for output in self.midpoint_iter(
+                    x_range = ((x_min + x_max) / 2, x_max),
+                    y_range = (y_min, (y_max + y_min) / 2),
+                    iteration = iteration + 1):
+                yield output
+            for output in self.midpoint_iter(
+                    x_range = (x_min, (x_max + x_min) / 2),
+                    y_range = ((y_min + y_max) / 2, y_max),
+                    iteration = iteration + 1):
+                yield output
+            for output in self.midpoint_iter(
+                    x_range = ((x_min + x_max) / 2, x_max),
+                    y_range = ((y_min + y_max) / 2, y_max),
+                    iteration = iteration + 1):
+                yield output
 
 def local_max(a, key):
     """Given an array and a key, return the maximum and its coords."""
