@@ -16,8 +16,8 @@ def process(wm):
     print "This may take a while"
     while s[0] > 2 and s[1] > 2:
         step(wm, s, i)
-        x = int(math.ceil(s[0]/2.0))
-        y = int(math.ceil(s[1]/2.0))
+        x = int(math.ceil(s[0] / 2.0))
+        y = int(math.ceil(s[1] / 2.0))
         s = (x, y)
         i += 1
     print "Final pass..."
@@ -41,7 +41,7 @@ def step(wm, s, i):
     box = (s[0]-1, s[1]-1)
     ## This leaves an additional column, so iterate one short.
     for (x, y), loc in wm.wmiter((0, -2), (0, -2), box):
-        sub_coords = (x, x+box[0], y, y+box[1])
+        sub_coords = (x, x + box[0], y, y + box[1])
         diamond(wm, sub_coords, i)
         square(wm, sub_coords, i)
 
