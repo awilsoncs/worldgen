@@ -184,12 +184,12 @@ def elevation_central(x):
     if x < 0:
         ## Real root: 
         ## (-x)**3 = -(x)**3
-        x = (-x)**(1.0/3.0)
+        x = (-x)**(1.0 / 3.0)
         x = -x
     else:
-        x = x**(1.0/3.0)
+        x = x**(1.0 / 3.0)
     return (0.5) + (0.25) * x
 
 def elevation_end(x):
-    x = (27.0 / 64.0) * (2*x - 1)**5 + 3.0 / 64.0
+    x = (27.0 / 64.0) * (2 * x - 1)**5 + 3.0 / 64.0
     return x
