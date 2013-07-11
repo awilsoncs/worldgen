@@ -1,16 +1,14 @@
+import numpy as np
 import pygame
 import worldmaps
-import numpy as np
 
 class MapView(object):
     def __init__(self, surface, worldmap):
-        self.wm = worldmap
+        self.worldmap = worldmap
         self.surface = surface
     
     def render(self):
-        '''
-        Renders a pxarray based on 'key' of Worldmap.
-        '''
+        """Renders a pxarray based on 'key' of Worldmap."""
         print "Rendering elevation"
         pxarray = pygame.PixelArray(self.surface)
         self.paint(pxarray)
@@ -25,10 +23,8 @@ class ElevationView(MapView):
         self.key = 'elevation'
 
     def paint(self, pxarray):
-        '''
-        Returns a pxarray based on 'elevation' of Worldmap.
-        '''
-        for (x, y), loc in np.ndenumerate(self.wm):
+        """Returns a pxarray based on 'elevation' of Worldmap."""
+        for (x, y), loc in np.ndenumerate(self.worldmap):
             g = loc[self.key]*255
             r = (255 - g) / 2
             b = g / 4
@@ -41,10 +37,7 @@ class ElevationView_wOcean(MapView):
         self.depth = depth
 
     def paint(self, pxarray):
-        '''
-        Returns a pxarray based on 'elevation' of Worldmap.
-        '''
-        for (x, y), loc in np.ndenumerate(self.wm):
+        for (x, y), loc in np.ndenumerate(self.worldmap):
             r,g,b = 0,0,0
             v = loc[self.key]
             if v < self.depth:
@@ -63,10 +56,8 @@ class ContourView(ElevationView_wOcean):
             depth)
 
     def paint(self, pxarray):
-        '''
-        Returns an elevation contour map.
-        '''
-        for (x, y), loc in np.ndenumerate(self.wm):
+        """Returns an elevation contour map."""
+        for (x, y), loc in np.ndenumerate(self.worldmap):
             r,g,b = 0,0,0
             v = loc[self.key]
             if v < self.depth:
@@ -94,7 +85,7 @@ class VolcanoChance(MapView):
         MapView.__init__(self, surface, worldmap)
 
     def paint(self, pxarray):
-        for (x, y), loc in np.ndenumerate(self.wm):
+        for (x, y), loc in np.ndenumerate(self.worldmap):
             r = loc['volcanism'] * 255
             g = loc['elevation'] * 255
             b = loc['smoothness'] * 255

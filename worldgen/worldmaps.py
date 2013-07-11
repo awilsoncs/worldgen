@@ -18,37 +18,30 @@ class Worldmap(np.ndarray):
         self.info = getattr(obj, 'info', None)
     
     def get_view(self, key):
-        """Returns an array of values based on the key"""
-        a = np.empty(self.shape)
-        for (x, y), v in np.ndenumerate(self):
-            a[x, y] = v[key]
-        return a
+        """Return an array of values based on the key"""
+        array = np.empty(self.shape)
+        for (x, y), location in np.ndenumerate(self):
+            array[x, y] = location[key]
+        return array
 
-    def get(self, (x, y), get_by):
-        """Returns the value for attribute get_by at (x, y).
-        (x, y): The int coordinates to search.
-        get_by: String to search the dict by.
-        """
+    def get(self, (x, y), key):
+        """Return the value for attribute get_by at (x, y)."""
         if self[x, y] == None:
             self[x, y] = Location((x, y))
-        if self[x, y].has_key(get_by):
-            return self[x, y][get_by]
+        if self[x, y].has_key(key):
+            return self[x, y][key]
         else:
             return None
         
     def put(self, (x, y), key, value):
-        """Places the given kwargs in the map at (x, y).
-        (x, y): The int coordinates to place the values.
-        **kwargs: Additional values to place at the coordinates.
-        """
+        """Place the value in the map at (x, y)."""
         if self[x, y] == None:
             self[x, y] = Location((x, y))
         if self[x, y].locked == False:
             self[x, y].update({key : value})
 
     def add(self, (x, y), key, value):
-        """As put, but adds to the current value instead of replacing.
-        """
+        """As put, but adds to the current value instead of replacing."""
         if self[x, y] == None:
             self[x, y] = Location((x, y))
         if self[x, y].locked == False:
@@ -59,10 +52,6 @@ class Worldmap(np.ndarray):
     def wmiter(self, x_range=(0, -1), y_range=(0, -1), step=(1, 1)):
         """Improves upon ndenumerate by iterating through a slice of the
         array, and taking steps.
-        x_range: The range of x to slice.
-        y_range: The range of y to slice.
-        step: Steps between yields, in (x, y)
-        locked: If True return locked locs.
         """
         x_min = x_range[0]
         x_max = x_range[1]
@@ -112,22 +101,4 @@ class Worldmap(np.ndarray):
                     y_range = ((y_min + y_max) / 2, y_max),
                     iteration = iteration + 1):
                 yield output
-
-def local_max(a, key):
-    """Given an array and a key, return the maximum and its coords."""
-    coords = None
-    v = None
-    for loc, value in np.ndenumerate(a):
-        if value[key] > v:
-            v = value[key]
-            coords = loc
-    return coords, v
-
-def local_min(a, key):
-    """Given an array and a key, return the minimum and its coords."""
-    coords = None
-    v = None
-    for loc, value in np.ndenumerate(a):
-        if value[key] < v:
-            coords = loc
-    return coords, v
+                

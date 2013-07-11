@@ -1,5 +1,7 @@
 class Location(dict):
-    '''Location is a simple extension of the dict class'''
+
+    """Location is a simple extension of the dict class"""
+    
     def __init__(self, (x, y), **kwargs):
         dict.__init__(self, kwargs)
         self.x = x
