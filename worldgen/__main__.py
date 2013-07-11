@@ -9,11 +9,8 @@ import worldmaps
 import views
 
 def main():
-    pygame.init() 
     t = time.time()
 
-
-    ## Input handling
     script, x, y = sys.argv[0], int(sys.argv[1]), int(sys.argv[2])
     size = (x, y)
     if x <= 0 or y <= 0:
@@ -25,17 +22,18 @@ def main():
         print "\tMust be (2^n)+1"
         sys.exit(0)
 
-    ## Run the code
-    window = pygame.display.set_mode(size)
     wm = worldmaps.Worldmap(size)
     wm = dsprocess.process(wm)
     depth = 0.6
+
+    pygame.init() 
+    window = pygame.display.set_mode(size)
     altview = views.ElevationView_wOcean(window, wm, depth)
     altview.render()
     pygame.display.flip()
 
     print "Ran in %r seconds." % (time.time() - t)
-    ## Boilerplate
+
     while True:
         for event in pygame.event.get(): 
             if event.type == pygame.QUIT: 

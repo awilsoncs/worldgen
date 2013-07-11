@@ -12,7 +12,7 @@ class Worldmap(np.ndarray):
         ## Attributes that should be generated in the DS process.
         obj.ds_generated = ['smoothness', 'elevation', 'volcanism',
                             'solubility', 'precious_minerals', 
-                            'economic_minerals']
+                            'economic_minerals', 'a', 'b', 'c', 'd', 'e', 'f']
         return obj
 
     def __array_finalize__(self, obj):
