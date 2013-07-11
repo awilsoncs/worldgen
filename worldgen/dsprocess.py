@@ -1,7 +1,8 @@
 from copy import copy
 import math
-import numpy as np
 import random
+
+import numpy as np
     
 def process(worldmap):
     """Populate and return a Worldmap with values."""
@@ -32,7 +33,7 @@ def diamond(worldmap, coords, iteration):
     x = math.ceil((coords[0] + coords[1]) / 2.0)
     y = math.ceil((coords[2] + coords[3]) / 2.0)
     
-    if worldmap[x, y] == None or worldmap[x, y].locked == False:
+    if worldmap[x, y] is None or worldmap[x, y].locked is False:
         for key in worldmap.ds_generated:
             corner_a = worldmap[coords[0], coords[2]][key]
             corner_b = worldmap[coords[0], coords[3]][key]
@@ -66,7 +67,7 @@ def square(worldmap, coords, iteration):
 
 def get_value(values=1, iteration=1, smoothing=1):
     """Return a float of random noise plus average of values."""
-    if type(values) == int:
+    if isinstance(values, int):
         value = values
     else:
         value = float(sum(values)) / float(len(values))
@@ -138,7 +139,7 @@ def scale_array(worldmap):
         for key in worldmap.ds_generated:
             value = location[key] - min_dict[key]
             value = value / (max_dict[key] - min_dict[key])
-            if key == 'elevation':
+            if key is 'elevation':
                 location[key] = elevation(value)
             else:
                 location[key] = value
@@ -152,7 +153,7 @@ def elevation(x):
 
 def elevation_central(x):
     """Adjust central ranges of float x"""
-    x = x / 4.0 - 0.125
+    x = x/4.0 - 0.125
     ## if x is negative, python won't like the math:
     if x < 0:
         ## Real root: 
@@ -161,9 +162,9 @@ def elevation_central(x):
         x = -x
     else:
         x = x**(1.0 / 3.0)
-    return (0.5) + (0.25) * x
+    return 0.5 + 0.25*x
 
 def elevation_end(x):
     """Adjust end ranges of float x"""
-    x = (27.0 / 64.0) * (2 * x - 1)**5 + 3.0 / 64.0
+    x = (27.0 / 64.0) * (2*x - 1)**5 + 3.0/64.0
     return x

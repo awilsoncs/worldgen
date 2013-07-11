@@ -1,15 +1,12 @@
-## Packaged modules
 import sys
 import math
 import time
 
-## Local modules
+import pygame
+
 import dsprocess
 import worldmaps
 import views
-
-## Pygame
-import pygame
 
 def main():
     pygame.init() 

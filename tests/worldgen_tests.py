@@ -86,14 +86,6 @@ def variables_test():
         if key not in wm[0, 0]:
             assert False, "loc missing variable"
 
-def local_max_test():
-    shape = (5, 5)
-    wm = worldmaps.Worldmap(shape)
-    dsprocess.process(wm)
-    coords, v = worldmaps.local_max(wm, 'elevation')
-    if v != 1.0:
-        assert False, "local max test failed"
-
 def get_test():
     shape = (5, 5)
     wm = worldmaps.Worldmap(shape)

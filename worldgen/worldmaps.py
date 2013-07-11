@@ -1,7 +1,9 @@
 import numpy as np
+
 from locations import Location
 
 class Worldmap(np.ndarray):
+
     def __new__(subtype, shape, dtype=object, buffer=None, offset=0,
           strides=None, order=None, info=None):
         obj = np.ndarray.__new__(subtype, shape, dtype, buffer, offset,
@@ -26,7 +28,7 @@ class Worldmap(np.ndarray):
 
     def get(self, (x, y), key):
         """Return the value for attribute get_by at (x, y)."""
-        if self[x, y] == None:
+        if self[x, y] is None:
             self[x, y] = Location((x, y))
         if self[x, y].has_key(key):
             return self[x, y][key]
@@ -35,16 +37,16 @@ class Worldmap(np.ndarray):
         
     def put(self, (x, y), key, value):
         """Place the value in the map at (x, y)."""
-        if self[x, y] == None:
+        if self[x, y] is None:
             self[x, y] = Location((x, y))
-        if self[x, y].locked == False:
+        if not self[x, y].locked:
             self[x, y].update({key : value})
 
     def add(self, (x, y), key, value):
         """As put, but adds to the current value instead of replacing."""
-        if self[x, y] == None:
+        if self[x, y] is None:
             self[x, y] = Location((x, y))
-        if self[x, y].locked == False:
+        if not self[x, y].locked:
             if key in self[x, y]:
                 value += self.get((x, y), key)
             self.put((x, y), key, value)
@@ -66,7 +68,7 @@ class Worldmap(np.ndarray):
             y_max = self.shape[1] + y_max + 1
 
         for (x, y), loc in np.ndenumerate(self[x_min:x_max, y_min:y_max]):
-            if x % x_step == 0 and y % y_step == 0:
+            if x % x_step is 0 and y % y_step is 0:
                 yield (x, y), loc
 
     def midpoint_iter(self, x_range=(0, -1), y_range=(0, -1), iteration=1):
@@ -101,4 +103,3 @@ class Worldmap(np.ndarray):
                     y_range = ((y_min + y_max) / 2, y_max),
                     iteration = iteration + 1):
                 yield output
-                
