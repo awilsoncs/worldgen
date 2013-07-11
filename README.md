@@ -1,4 +1,4 @@
-worldgen
+worldgen 0.2 alpha
 ========
 
 A world generator, designed for worldbuilders and DMs who want information beyond maps.
