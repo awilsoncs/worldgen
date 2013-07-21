@@ -10,7 +10,6 @@ class MapView(object):
     
     def render(self):
         """Renders a pxarray based on 'key' of Worldmap."""
-        print "Rendering elevation"
         pxarray = pygame.PixelArray(self.surface)
         self.paint(pxarray)
         del pxarray
