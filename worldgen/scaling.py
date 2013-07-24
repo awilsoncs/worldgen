@@ -17,7 +17,7 @@ def scale(worldmap, values):
     
     # Adjust the values
     for (x, y), location in np.ndenumerate(worldmap):
-        for key in worldmap.ds_generated:
+        for key in values:
             value = location[key] - min_dict[key]
             value = value / (max_dict[key] - min_dict[key])
             if key is 'elevation':

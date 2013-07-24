@@ -90,3 +90,15 @@ class VolcanoChance(MapView):
             g = loc['elevation'] * 255
             b = loc['smoothness'] * 255
             pxarray[x, y] = (r, g, b)
+
+class PrecipitationView(MapView):
+    def __init__(self, surface, worldmap):
+        MapView.__init__(self, surface, worldmap)
+
+    def paint(self, pxarray):
+        for (x, y), loc in np.ndenumerate(self.worldmap):
+            if loc['ocean']:
+                pxarray[x, y] = (0, 0, 0)
+            else:
+                precipitation = loc['precipitation'] * 255
+                pxarray[x, y] = (precipitation, precipitation, precipitation)

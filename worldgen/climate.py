@@ -3,18 +3,22 @@ import numpy as np
 def build_climate(worldmap):
     set_oceans(worldmap, 0.6)
     
+    # Southern westerlies
     start_at = int(worldmap.shape[1] * 2.0/3.0)
     stop_at = worldmap.shape[1]
     draw_wind (worldmap, start_at, stop_at, 2)
 
-    start_at = 0
-    stop_at = int(worldmap.shape[1] * 1.0/3.0) + 1
+    # Northern westerlies
+    start_at = int(worldmap.shape[1] * 1.0/3.0)
+    stop_at = -1
     draw_wind (worldmap, start_at, stop_at, 2)
 
+    # Southern trades
     start_at = int(worldmap.shape[1] * 2.0/3.0)
     stop_at = worldmap.shape[1]/2 - 1
     draw_wind (worldmap, start_at, stop_at, -2)
 
+    # Northern trades
     start_at = int(worldmap.shape[1] * 1.0/3.0)
     stop_at = worldmap.shape[1]/2 + 2
     draw_wind (worldmap, start_at, stop_at, -2)
@@ -37,10 +41,10 @@ def draw_wind(worldmap, start_at, stop_at, direction):
         for (x, y2), cell in np.ndenumerate(moisture_array):
             if worldmap[x, y]['ocean']:
                 moisture_array[x, y2] += 1.0
-                worldmap[x, y]['precipitation'] = moisture_array[x, y2]
+                worldmap[x, y]['precipitation'] = 0.0
             else:
                 elevation = worldmap[x, y]['elevation']
-                precipitation = moisture_array[x, y2] * elevation / 4.0
+                precipitation = moisture_array[x, y2] * (elevation - 0.5)
                 moisture_array[x, y2] -= precipitation
                 worldmap[x, y]['precipitation'] = precipitation
-        np.roll(moisture_array, direction)
+        moisture_array = np.roll(moisture_array, direction)

@@ -9,6 +9,7 @@ import climate
 import dsprocess
 import worldmaps
 import views
+import scaling
 
 def main():
     t = time.time()
@@ -28,10 +29,11 @@ def main():
     worldmap = dsprocess.process(worldmap)
     depth = 0.6
     climate.build_climate(worldmap)
+    scaling.scale(worldmap, ['precipitation'])
 
     pygame.init() 
     window = pygame.display.set_mode(size)
-    altview = views.ElevationView_wOcean(window, worldmap, depth)
+    altview = views.PrecipitationView(window, worldmap)
     altview.render()
     pygame.display.flip()
 
@@ -59,7 +61,7 @@ def main():
                     worldmap = np.roll(worldmap, 5, axis=0)
                 elif event.key == pygame.K_LEFT:
                     worldmap = np.roll(worldmap, -5, axis=0)
-                altview = views.ElevationView_wOcean(window, worldmap, depth)
+                altview = views.PrecipitationView(window, worldmap)
                 altview.render()
                 pygame.display.flip()  
 
