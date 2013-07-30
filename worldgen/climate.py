@@ -1,6 +1,8 @@
 import math
 import numpy as np
 
+from config import Config
+
 def build_climate(worldmap):
     set_oceans(worldmap, 0.6)
     
@@ -37,15 +39,18 @@ def draw_wind(worldmap, start_at, stop_at, direction):
     if start_at > stop_at:
         step = -1
     moisture_array = np.zeros((worldmap.shape[0],1))
+    config_file = Config('config.txt')
     # Step from the 30th n northward to the equator.
     for y in range(start_at, stop_at, step):
         for (x, y2), cell in np.ndenumerate(moisture_array):
             if worldmap[x, y]['ocean']:
-                moisture_array[x, y2] += 1.0
+                moisture = float(config_file['moisture_pickup'])
+                moisture_array[x, y2] += moisture
                 worldmap[x, y]['precipitation'] = 0.0
             else:
                 elevation = worldmap[x, y]['elevation']
-                precipitation = moisture_array[x, y2] * (elevation - 0.5)
+                moisture = float(config_file['moisture_drop'])
+                precipitation = moisture_array[x, y2] * (elevation - moisture)
                 moisture_array[x, y2] -= precipitation
                 worldmap[x, y]['precipitation'] = precipitation
         moisture_array = np.roll(moisture_array, direction)
