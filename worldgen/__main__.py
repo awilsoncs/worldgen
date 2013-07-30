@@ -6,6 +6,7 @@ import pygame
 import numpy as np
 
 import climate
+from config import Config
 import dsprocess
 import worldmaps
 import views
@@ -14,20 +15,15 @@ import scaling
 def main():
     t = time.time()
 
-    script, x, y = sys.argv[0], int(sys.argv[1]), int(sys.argv[2])
-    size = (x, y)
-    if x <= 0 or y <= 0:
-        print "ERROR: Invalid size: %d" % size
-        print "\tSetting size to 257"
-        size = (257, 257)
-    if math.log(x-1, 2) % 1 != 0.0 or math.log(y-1, 2) % 1 != 0.0:
-        print "ERROR: Invalid size: %d" % size
-        print "\tMust be (2^n)+1"
-        sys.exit(0)
+    config_file = Config('config.txt')
 
+    x = int(config_file['size_x'])
+    y = int(config_file['size_y'])
+    size = (x, y)
+    scroll = int(config_file['scroll'])
     worldmap = worldmaps.Worldmap(size)
     worldmap = dsprocess.process(worldmap)
-    depth = 0.6
+
     climate.build_climate(worldmap)
     scaling.scale(worldmap, ['precipitation'])
 
@@ -54,13 +50,13 @@ def main():
                     print "Land"
             elif event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_UP:
-                    depth += 0.005  
+                    depth += float(config_file['ocean_change'])  
                 elif event.key == pygame.K_DOWN:
-                    depth -= 0.005
+                    depth -= float(config_file['ocean_change']) 
                 elif event.key == pygame.K_RIGHT:
-                    worldmap = np.roll(worldmap, 5, axis=0)
+                    worldmap = np.roll(worldmap, scroll, axis=0)
                 elif event.key == pygame.K_LEFT:
-                    worldmap = np.roll(worldmap, -5, axis=0)
+                    worldmap = np.roll(worldmap, -1 * scroll, axis=0)
                 altview = views.PrecipitationView(window, worldmap)
                 altview.render()
                 pygame.display.flip()  

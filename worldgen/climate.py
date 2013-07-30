@@ -1,3 +1,4 @@
+import math
 import numpy as np
 
 def build_climate(worldmap):
