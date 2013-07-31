@@ -27,8 +27,9 @@ DEFAULTS = ['======Parameters=====\n',
             '=======Climate=======\n',
             'moisture_pickup=1.0\n',
             'moisture_drop=0.5\n',
+            'winds=50\n',
             '\n',
             '=======Controls======\n',
             'scroll=5\n',
             'change_ocean=0.005\n',
-            '\n']
+            ]

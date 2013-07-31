@@ -40,7 +40,7 @@ def draw_wind(worldmap, start_at, stop_at, direction):
         step = -1
     moisture_array = np.zeros((worldmap.shape[0],1))
     config_file = Config('config.txt')
-    # Step from the 30th n northward to the equator.
+
     for y in range(start_at, stop_at, step):
         for (x, y2), cell in np.ndenumerate(moisture_array):
             if worldmap[x, y]['ocean']:
@@ -53,4 +53,8 @@ def draw_wind(worldmap, start_at, stop_at, direction):
                 precipitation = moisture_array[x, y2] * (elevation - moisture)
                 moisture_array[x, y2] -= precipitation
                 worldmap[x, y]['precipitation'] = precipitation
-        moisture_array = np.roll(moisture_array, direction)
+        distance = abs(start_at - stop_at)
+        current = abs(y - start_at)
+        winds = int(config_file['winds'])
+        shift = int(math.sin(current / float(distance)) * winds * direction)
+        moisture_array = np.roll(moisture_array, shift)

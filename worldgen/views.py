@@ -97,8 +97,5 @@ class PrecipitationView(MapView):
 
     def paint(self, pxarray):
         for (x, y), loc in np.ndenumerate(self.worldmap):
-            if loc['ocean']:
-                pxarray[x, y] = (0, 0, 0)
-            else:
-                precipitation = loc['precipitation'] * 255
-                pxarray[x, y] = (precipitation, precipitation, precipitation)
+            precipitation = loc['precipitation'] * 255
+            pxarray[x, y] = (precipitation, precipitation, precipitation)

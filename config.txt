@@ -1,13 +1,13 @@
 ======Parameters=====
-size_x=513
-size_y=257
+size_x=1025
+size_y=513
 depth=0.6
 
 =======Climate=======
 moisture_pickup=1.0
 moisture_drop=0.5
+winds=50
 
 =======Controls======
 scroll=5
 change_ocean=0.005
-
