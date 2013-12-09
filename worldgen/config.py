@@ -8,6 +8,7 @@ class Config(dict):
         try:
             self.get_configs(config_file)
         except IOError:
+            print "Generating config file..."
             with open(config_file, 'w') as f:
                 output = ""
                 for line in DEFAULTS:
