@@ -1,18 +1,13 @@
-try:
-    from setuptools import setup
-except ImportError:
-    from distutils.core import setup
+from distutils.core import setup
 
-config = {
-    'version': '0.1a',
-    'description': 'World Generator',
-    'author': 'Aaron Wilson',
-    'author_email': 'aaronwilsonguitar@gmail.com',
-    'install_requires': ['nose'],
-    'packages': ['worldgen'],
-    'requires': ['numpy', 'pygame'],
-    'scripts': [],
-    'name': 'worldgen'
-}
-
-setup(**config)
+setup(
+    name='worldgen',
+    version='1.0a',
+    packages=['tests', 'worldgen'],
+    url='',
+    license='',
+    author='Aaron',
+    author_email='',
+    description='',
+    requires=['numpy']
+)

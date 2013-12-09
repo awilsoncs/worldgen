@@ -2,7 +2,9 @@ import math
 
 import numpy as np
 
+
 def scale(worldmap, values):
+
     """Scale all values in the array to 0.0-1.0 floats."""
     # find the min/max for each key
     print "Scaling array..."
