@@ -9,8 +9,8 @@ config = {
     'author': 'Aaron Wilson',
     'author_email': 'aaronwilsonguitar@gmail.com',
     'install_requires': ['nose'],
-    'packages': ['worldgen', 'worldgen.algorithm', 'worldgen.worldmaps',
-                 'numpy'],
+    'packages': ['worldgen'],
+    'requires': ['numpy', 'pygame'],
     'scripts': [],
     'name': 'worldgen'
 }
