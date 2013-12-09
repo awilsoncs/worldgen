@@ -1,5 +1,4 @@
 import sys
-import math
 import time
 
 import pygame
@@ -11,6 +10,7 @@ import dsprocess
 import worldmaps
 import views
 import scaling
+
 
 def main():
     t = time.time()
