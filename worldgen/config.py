@@ -1,5 +1,10 @@
 class Config(dict):
-    def __init__(self, config_file):
+    def __init__(self, config_file, **kwargs):
+        """
+        @param config_file: filename of the config file
+        @param kwargs: additional config parameters
+        """
+        super(Config, self).__init__(**kwargs)
         try:
             self.get_configs(config_file)
         except IOError:

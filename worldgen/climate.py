@@ -37,6 +37,7 @@ def set_oceans(worldmap, depth):
             location['ocean'] = 0.0
 
 
+#TODO Investigate why climate map is discontinuous at map edges.
 def draw_wind(worldmap, start_at, stop_at, direction):
     step = 1
     if start_at > stop_at:
