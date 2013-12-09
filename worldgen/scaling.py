@@ -10,7 +10,7 @@ def scale(worldmap, values):
     print "Scaling array..."
     max_dict = {}
     min_dict = {}
-    for (x, y), location in np.ndenumerate(worldmap):
+    for (_, _), location in np.ndenumerate(worldmap):
         for key in values:
             if key not in max_dict or location[key] > max_dict[key]:
                 max_dict[key] = location[key]
@@ -18,7 +18,7 @@ def scale(worldmap, values):
                 min_dict[key] = location[key]
     
     # Adjust the values
-    for (x, y), location in np.ndenumerate(worldmap):
+    for (_, _), location in np.ndenumerate(worldmap):
         for key in values:
             value = location[key] - min_dict[key]
             value = value / (max_dict[key] - min_dict[key])
@@ -27,12 +27,14 @@ def scale(worldmap, values):
             else:
                 location[key] = value
 
+
 def elevation(x):
     """Return float x adjusted for earthlike elevations"""
     x = elevation_central(x) + elevation_end(x)
     if x > 1.0:
         x = math.floor(x)
     return x
+
 
 def elevation_central(x):
     """Adjust central ranges of float x"""
@@ -44,8 +46,9 @@ def elevation_central(x):
         x = (-x)**(1.0 / 3.0)
         x = -x
     else:
-        x = x**(1.0 / 3.0)
+        x **= (1.0 / 3.0)
     return 0.5 + 0.25*x
+
 
 def elevation_end(x):
     """Adjust end ranges of float x"""
