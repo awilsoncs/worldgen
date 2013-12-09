@@ -2,23 +2,23 @@ import numpy as np
 
 from locations import Location
 
-class Worldmap(np.ndarray):
 
-    def __new__(subtype, shape, dtype=object, buffer=None, offset=0,
-          strides=None, order=None, info=None):
-        obj = np.ndarray.__new__(subtype, shape, dtype, buffer, offset,
-                                strides, order)
+class Worldmap(np.ndarray):
+    def __new__(cls, shape, dtype=object, buffer=None, offset=0,
+                strides=None, order=None, info=None):
+        obj = np.ndarray.__new__(cls, shape, dtype, buffer, offset,
+                                 strides, order)
         obj.info = info
         ## Attributes that should be generated in the DS process.
         obj.ds_generated = ['smoothness', 'elevation', 'volcanism',
-                            'solubility', 'precious_minerals', 
+                            'solubility', 'precious_minerals',
                             'economic_minerals']
         return obj
 
     def __array_finalize__(self, obj):
         if obj is None: return
         self.info = getattr(obj, 'info', None)
-    
+
     def get_view(self, key):
         """Return an array of values based on the key"""
         array = np.empty(self.shape)
@@ -34,13 +34,13 @@ class Worldmap(np.ndarray):
             return self[x, y][key]
         else:
             return None
-        
+
     def put(self, (x, y), key, value):
         """Place the value in the map at (x, y)."""
         if self[x, y] is None:
             self[x, y] = Location((x, y))
         if not self[x, y].locked:
-            self[x, y].update({key : value})
+            self[x, y].update({key: value})
 
     def add(self, (x, y), key, value):
         """As put, but adds to the current value instead of replacing."""
@@ -84,22 +84,22 @@ class Worldmap(np.ndarray):
         if x_min < x_max - 1 or y_min < y_max - 1:
             yield (x_min, x_max, y_min, y_max, iteration)
             for output in self.midpoint_iter(
-                    x_range = (x_min, (x_max + x_min) / 2),
-                    y_range = (y_min, (y_max + y_min) / 2),
-                    iteration = iteration + 1):
+                    x_range=(x_min, (x_max + x_min) / 2),
+                    y_range=(y_min, (y_max + y_min) / 2),
+                    iteration=iteration + 1):
                 yield output
             for output in self.midpoint_iter(
-                    x_range = ((x_min + x_max) / 2, x_max),
-                    y_range = (y_min, (y_max + y_min) / 2),
-                    iteration = iteration + 1):
+                    x_range=((x_min + x_max) / 2, x_max),
+                    y_range=(y_min, (y_max + y_min) / 2),
+                    iteration=iteration + 1):
                 yield output
             for output in self.midpoint_iter(
-                    x_range = (x_min, (x_max + x_min) / 2),
-                    y_range = ((y_min + y_max) / 2, y_max),
-                    iteration = iteration + 1):
+                    x_range=(x_min, (x_max + x_min) / 2),
+                    y_range=((y_min + y_max) / 2, y_max),
+                    iteration=iteration + 1):
                 yield output
             for output in self.midpoint_iter(
-                    x_range = ((x_min + x_max) / 2, x_max),
-                    y_range = ((y_min + y_max) / 2, y_max),
-                    iteration = iteration + 1):
+                    x_range=((x_min + x_max) / 2, x_max),
+                    y_range=((y_min + y_max) / 2, y_max),
+                    iteration=iteration + 1):
                 yield output
