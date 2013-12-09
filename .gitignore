@@ -35,4 +35,4 @@ nosetests.xml
 .pydevproject
 
 #Config File
-config.txt
+worldgen/worldgen/config.txt
