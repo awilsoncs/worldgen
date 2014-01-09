@@ -19,7 +19,7 @@ class MapView(object):
 
 class ElevationView(MapView):
     def __init__(self, surface, worldmap):
-        MapView.__init__(surface, worldmap)
+        MapView.__init__(self, surface, worldmap)
         self.key = 'elevation'
 
     def paint(self, pxarray):

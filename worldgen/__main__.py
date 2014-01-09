@@ -29,7 +29,8 @@ def main():
 
     pygame.init() 
     window = pygame.display.set_mode(size)
-    altview = views.PrecipitationView(window, worldmap)
+    altview = views.ContourView(window, worldmap, 0.6)
+    #altview = views.PrecipitationView(window, worldmap)
     altview.render()
     pygame.display.flip()
 
@@ -57,7 +58,7 @@ def main():
                     worldmap = np.roll(worldmap, scroll, axis=0)
                 elif event.key == pygame.K_LEFT:
                     worldmap = np.roll(worldmap, -1 * scroll, axis=0)
-                altview = views.PrecipitationView(window, worldmap)
+                altview = views.ContourView(window, worldmap, 0.6)
                 altview.render()
                 pygame.display.flip()  
 

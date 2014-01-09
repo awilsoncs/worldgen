@@ -25,6 +25,8 @@ class Config(dict):
                     value = line[1]
                     self[key] = value
 
+verbose = False
+
 DEFAULTS = ['======Parameters=====\n',
             'size_x=513\n',
             'size_y=257\n',

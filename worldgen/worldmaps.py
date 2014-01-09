@@ -1,6 +1,7 @@
 import numpy as np
 
 from locations import Location
+from worldgen import config
 
 
 class Worldmap(np.ndarray):
@@ -55,6 +56,8 @@ class Worldmap(np.ndarray):
         """Improves upon ndenumerate by iterating through a slice of the
         array, and taking steps.
         """
+        if config.verbose:
+            print "Call to worldmap.wmiter"
         x_min = x_range[0]
         x_max = x_range[1]
         y_min = y_range[0]
@@ -68,7 +71,11 @@ class Worldmap(np.ndarray):
             y_max = self.shape[1] + y_max + 1
 
         for (x, y), loc in np.ndenumerate(self[x_min:x_max, y_min:y_max]):
-            if x % x_step is 0 and y % y_step is 0:
+            if config.verbose:
+                print "wmiter: loc found at x: %d y: %d" % (x, y)
+            if (x % x_step == 0) and (y % y_step == 0):
+                if config.verbose:
+                    print "Yielding x: %d y: %d" % (x, y)
                 yield (x, y), loc
 
     def midpoint_iter(self, x_range=(0, -1), y_range=(0, -1), iteration=1):

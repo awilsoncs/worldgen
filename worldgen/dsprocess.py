@@ -1,6 +1,7 @@
 from copy import copy
 import math
 import random
+import config
 
 import scaling
 
@@ -108,15 +109,17 @@ def sew_seams(worldmap):
     height = worldmap.shape[1]
     iteration = 1
     while height > 1:
-        box = (1, height - 1)
-        for (x, y), location in worldmap.wmiter((0, 1), (0, -2), box):
+        box = (1, height-1)
+        for (x, y), _ in worldmap.wmiter((0, 1), (0, -2), box):
+            if config.verbose:
+                print "Sewing y: %d" % y
             coords = (0, 0, y, y + box[1])
             diamond(worldmap, coords, iteration)
             worldmap[-1, y] = copy(worldmap[0, y])
         iteration += 1
         height = int(math.ceil(height / 2.0))
 
-    ## Horizonal seams
+    ## Horizontal seams
     north_loc = worldmap[0, 0]
     south_loc = worldmap[0, -1]
     for x in xrange(worldmap.shape[0]):
