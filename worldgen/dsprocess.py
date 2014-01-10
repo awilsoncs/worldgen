@@ -20,7 +20,7 @@ def step(worldmap):
     print "Beginning map..."
     print "This may take a while"
 
-    for coords in worldmap.midpoint_iter():
+    for coords in midpoint_iter(worldmap):
         x1, x2 = coords[0], coords[1]
         y1, y2 = coords[2], coords[3]
         sub_coords = (x1, x2, y1, y2)
@@ -125,3 +125,41 @@ def sew_seams(worldmap):
     for x in xrange(worldmap.shape[0]):
         worldmap[x, 0] = copy(north_loc)
         worldmap[x, -1] = copy(south_loc)
+
+
+def midpoint_iter(world_map, x_range=(0, -1), y_range=(0, -1), iteration=1):
+    x_min = x_range[0]
+    x_max = x_range[1]
+    y_min = y_range[0]
+    y_max = y_range[1]
+
+    if x_max < 0:
+        x_max = world_map.shape[0] + x_max
+    if y_max < 0:
+        y_max = world_map.shape[1] + y_max
+    if x_min < x_max - 1 or y_min < y_max - 1:
+        yield (x_min, x_max, y_min, y_max, iteration)
+        for output in midpoint_iter(
+                world_map,
+                x_range=(x_min, (x_max + x_min) / 2),
+                y_range=(y_min, (y_max + y_min) / 2),
+                iteration=iteration + 1):
+            yield output
+        for output in midpoint_iter(
+                world_map,
+                x_range=((x_min + x_max) / 2, x_max),
+                y_range=(y_min, (y_max + y_min) / 2),
+                iteration=iteration + 1):
+            yield output
+        for output in midpoint_iter(
+                world_map,
+                x_range=(x_min, (x_max + x_min) / 2),
+                y_range=((y_min + y_max) / 2, y_max),
+                iteration=iteration + 1):
+            yield output
+        for output in midpoint_iter(
+                world_map,
+                x_range=((x_min + x_max) / 2, x_max),
+                y_range=((y_min + y_max) / 2, y_max),
+                iteration=iteration + 1):
+            yield output

@@ -39,5 +39,5 @@ DEFAULTS = ['======Parameters=====\n',
             '\n',
             '=======Controls======\n',
             'scroll=5\n',
-            'change_ocean=0.005\n',
+            'change_ocean=0.005\n'
             ]

@@ -57,7 +57,7 @@ class Worldmap(np.ndarray):
         array, and taking steps.
         """
         if config.verbose:
-            print "Call to worldmap.wmiter"
+            print "Call to wmiter"
         x_min = x_range[0]
         x_max = x_range[1]
         y_min = y_range[0]
@@ -77,36 +77,3 @@ class Worldmap(np.ndarray):
                 if config.verbose:
                     print "Yielding x: %d y: %d" % (x, y)
                 yield (x, y), loc
-
-    def midpoint_iter(self, x_range=(0, -1), y_range=(0, -1), iteration=1):
-        x_min = x_range[0]
-        x_max = x_range[1]
-        y_min = y_range[0]
-        y_max = y_range[1]
-
-        if x_max < 0:
-            x_max = self.shape[0] + x_max
-        if y_max < 0:
-            y_max = self.shape[1] + y_max
-        if x_min < x_max - 1 or y_min < y_max - 1:
-            yield (x_min, x_max, y_min, y_max, iteration)
-            for output in self.midpoint_iter(
-                    x_range=(x_min, (x_max + x_min) / 2),
-                    y_range=(y_min, (y_max + y_min) / 2),
-                    iteration=iteration + 1):
-                yield output
-            for output in self.midpoint_iter(
-                    x_range=((x_min + x_max) / 2, x_max),
-                    y_range=(y_min, (y_max + y_min) / 2),
-                    iteration=iteration + 1):
-                yield output
-            for output in self.midpoint_iter(
-                    x_range=(x_min, (x_max + x_min) / 2),
-                    y_range=((y_min + y_max) / 2, y_max),
-                    iteration=iteration + 1):
-                yield output
-            for output in self.midpoint_iter(
-                    x_range=((x_min + x_max) / 2, x_max),
-                    y_range=((y_min + y_max) / 2, y_max),
-                    iteration=iteration + 1):
-                yield output
