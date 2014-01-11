@@ -1,8 +1,17 @@
 import numpy as np
 
 from locations import Location
-from worldgen import config
 
+def world_map(shape):
+    return np.zeros((513, 257,), dtype=(('locked', 'int8')
+                                        ('smoothness', 'float16'),
+                                        ('elevation', 'float16'),
+                                        ('volcanism', 'float16'),
+                                        ('solubility', 'float16'),
+                                        ('precious minerals', 'float16'),
+                                        ('economic minerals', 'float16'),
+                                        ('water depth', 'float16'),
+                                        ('precipitation', 'float16')))
 
 class Worldmap(np.ndarray):
     def __new__(cls, shape, dtype=object, buffer=None, offset=0,
@@ -43,6 +52,9 @@ class Worldmap(np.ndarray):
         if not self[x, y].locked:
             self[x, y].update({key: value})
 
+    def lock(self, (x, y)):
+        self[x, y].locked = True
+
     def add(self, (x, y), key, value):
         """As put, but adds to the current value instead of replacing."""
         if self[x, y] is None:
@@ -51,29 +63,3 @@ class Worldmap(np.ndarray):
             if key in self[x, y]:
                 value += self.get((x, y), key)
             self.put((x, y), key, value)
-
-    def wmiter(self, x_range=(0, -1), y_range=(0, -1), step=(1, 1)):
-        """Improves upon ndenumerate by iterating through a slice of the
-        array, and taking steps.
-        """
-        if config.verbose:
-            print "Call to wmiter"
-        x_min = x_range[0]
-        x_max = x_range[1]
-        y_min = y_range[0]
-        y_max = y_range[1]
-        x_step = step[0]
-        y_step = step[1]
-
-        if x_max < 0:
-            x_max = self.shape[0] + x_max + 1
-        if y_max < 0:
-            y_max = self.shape[1] + y_max + 1
-
-        for (x, y), loc in np.ndenumerate(self[x_min:x_max, y_min:y_max]):
-            if config.verbose:
-                print "wmiter: loc found at x: %d y: %d" % (x, y)
-            if (x % x_step == 0) and (y % y_step == 0):
-                if config.verbose:
-                    print "Yielding x: %d y: %d" % (x, y)
-                yield (x, y), loc

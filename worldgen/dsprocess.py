@@ -2,6 +2,7 @@ from copy import copy
 import math
 import random
 import config
+import numpy as np
 
 import scaling
 
@@ -95,10 +96,10 @@ def seed_corners(worldmap):
         worldmap.add((0, -1), key, value_b)
         worldmap.add((-1, -1), key, value_b)
 
-    worldmap[0, 0].locked = True
-    worldmap[0, -1].locked = True
-    worldmap[-1, 0].locked = True
-    worldmap[-1, -1].locked = True
+    worldmap.lock((0, 0))
+    worldmap.lock((0, -1))
+    worldmap.lock((-1, 0))
+    worldmap.lock((-1, -1))
 
 
 def sew_seams(worldmap):
@@ -110,7 +111,7 @@ def sew_seams(worldmap):
     iteration = 1
     while height > 1:
         box = (1, height-1)
-        for (x, y), _ in worldmap.wmiter((0, 1), (0, -2), box):
+        for (x, y), _ in wmiter(worldmap, (0, 1), (0, -2), box):
             if config.verbose:
                 print "Sewing y: %d" % y
             coords = (0, 0, y, y + box[1])
@@ -163,3 +164,30 @@ def midpoint_iter(world_map, x_range=(0, -1), y_range=(0, -1), iteration=1):
                 y_range=((y_min + y_max) / 2, y_max),
                 iteration=iteration + 1):
             yield output
+
+
+def wmiter(world_map, x_range=(0, -1), y_range=(0, -1), step=(1, 1)):
+        """Improves upon ndenumerate by iterating through a slice of the
+        array, and taking steps.
+        """
+        if config.verbose:
+            print "Call to wmiter"
+        x_min = x_range[0]
+        x_max = x_range[1]
+        y_min = y_range[0]
+        y_max = y_range[1]
+        x_step = step[0]
+        y_step = step[1]
+
+        if x_max < 0:
+            x_max = world_map.shape[0] + x_max + 1
+        if y_max < 0:
+            y_max = world_map.shape[1] + y_max + 1
+
+        for (x, y), loc in np.ndenumerate(world_map[x_min:x_max, y_min:y_max]):
+            if config.verbose:
+                print "wmiter: loc found at x: %d y: %d" % (x, y)
+            if (x % x_step == 0) and (y % y_step == 0):
+                if config.verbose:
+                    print "Yielding x: %d y: %d" % (x, y)
+                yield (x, y), loc
