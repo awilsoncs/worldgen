@@ -28,8 +28,8 @@ class Config(dict):
 verbose = False
 
 DEFAULTS = ['======Parameters=====\n',
-            'size_x=513\n',
-            'size_y=257\n',
+            'size_x=257\n',
+            'size_y=129\n',
             'depth=0.6\n',
             '\n',
             '=======Climate=======\n',

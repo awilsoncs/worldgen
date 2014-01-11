@@ -39,10 +39,10 @@ def diamond(worldmap, coords, iteration):
 
     if worldmap[x, y] is None or worldmap[x, y].locked is False:
         for key in worldmap.ds_generated:
-            corner_a = worldmap[coords[0], coords[2]][key]
-            corner_b = worldmap[coords[0], coords[3]][key]
-            corner_c = worldmap[coords[1], coords[2]][key]
-            corner_d = worldmap[coords[1], coords[3]][key]
+            corner_a = worldmap.get((coords[0], coords[2]), key)
+            corner_b = worldmap.get((coords[0], coords[3]), key)
+            corner_c = worldmap.get((coords[1], coords[2]), key)
+            corner_d = worldmap.get((coords[1], coords[3]), key)
             values = (corner_a, corner_b, corner_c, corner_d)
             if key == 'smoothness':
                 value = get_value(values, iteration)
