@@ -24,12 +24,13 @@ def main():
     worldmap = worldmaps.world_map(size)
     worldmap = dsprocess.process(worldmap)
 
-    climate.build_climate(worldmap)
-    scaling.scale(worldmap, ['precipitation'])
+    #climate.build_climate(worldmap)
+    #scaling.scale(worldmap, ['precipitation'])
 
     pygame.init() 
     window = pygame.display.set_mode(size)
-    altview = views.ContourView(window, worldmap, 0.5)
+    layer = np.copy(worldmap['smoothness'])
+    altview = views.RedGreenView(window, layer)
     #altview = views.PrecipitationView(window, worldmap)
     altview.render()
     pygame.display.flip()
@@ -50,10 +51,10 @@ def main():
                 elif event.key == pygame.K_DOWN:
                     depth -= float(config_file['ocean_change']) 
                 elif event.key == pygame.K_RIGHT:
-                    worldmap = np.roll(worldmap, scroll, axis=0)
+                    layer = np.roll(layer, scroll, axis=0)
                 elif event.key == pygame.K_LEFT:
-                    worldmap = np.roll(worldmap, -1 * scroll, axis=0)
-                altview = views.ContourView(window, worldmap, 0.6)
+                    layer = np.roll(layer, -1 * scroll, axis=0)
+                altview = views.RedGreenView(window, layer)
                 altview.render()
                 pygame.display.flip()  
 

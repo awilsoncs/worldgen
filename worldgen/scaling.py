@@ -2,16 +2,13 @@ import math
 
 import numpy as np
 
-def scale(worldmap, values):
+def scale(layer):
     """Scale all values in the array to 0.0-1.0 floats."""
     print "Scaling array..."
-    for key in values:
-        high = worldmap[key].max()
-        low = worldmap[key].min()
-        rng = high - low
-        worldmap[key] = 1.0 - ((high - worldmap[key]) / rng)
-    if 'elevation' in values:
-        worldmap['elevation'] = elevation(worldmap['elevation'])
+    high = layer.max()
+    low = layer.min()
+    rng = high - low
+    layer[:] = 1.0 - ((high - layer) / rng)
 
 
 def elevation(x):
