@@ -1,9 +1,7 @@
-import math
 import random
-import config
-import numpy as np
 
 import scaling
+import worldmaps
 
 
 def process(worldmap):
@@ -15,6 +13,12 @@ def process(worldmap):
     ds_process(smoothness)
     print "Scaling smoothness"
     scaling.scale(smoothness)
+    for key in worldmaps.ds_generated:
+        layer = worldmap[key]
+        seed_corners(layer)
+        sew_seams(layer)
+        ds_process(layer)
+        scaling.scale(layer)
     return worldmap
 
 
@@ -53,24 +57,21 @@ def sew_vertical(seam, iteration=1):
         seam[:mid_y+1] = sew_vertical(seam[:mid_y+1], iteration+1)
         seam[mid_y:] = sew_vertical(seam[mid_y:], iteration+1)
     return seam
-*/*-
+
+
 def ds_process(layer, iteration=1, smoothing_layer=None):
     mid_x = midpoint(layer.shape[0])
     mid_y = midpoint(layer.shape[1])
 
     diamond(layer, iteration, smoothing_layer)
     square(layer, iteration, smoothing_layer)
-    #If the array is flat in either direction, don't do that direction. If it's just a point, we're done.
+
     next_iter = iteration + 1
     if smoothing_layer is None:
         if mid_x > 1 or mid_y > 1:
-            #Bottom Left
             layer[:mid_x+1, :mid_y+1] = ds_process(layer[:mid_x+1, :mid_y+1], next_iter)
-            #Bottom Right
             layer[mid_x:, :mid_y+1] = ds_process(layer[mid_x:, :mid_y+1], next_iter)
-            #Top Left
             layer[:mid_x+1, mid_y:] = ds_process(layer[:mid_x+1, mid_y:], next_iter)
-            #Top Right
             layer[mid_x:, mid_y:] = ds_process(layer[mid_x:, mid_y:], next_iter)
     return layer
 
