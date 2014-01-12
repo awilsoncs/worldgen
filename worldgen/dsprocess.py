@@ -4,6 +4,7 @@ import random
 import config
 import numpy as np
 
+import worldmaps
 import scaling
 
 
@@ -12,7 +13,7 @@ def process(worldmap):
     seed_corners(worldmap)
     sew_seams(worldmap)
     step(worldmap)
-    scaling.scale(worldmap, worldmap.ds_generated)
+    scaling.scale(worldmap, worldmaps.ds_generated)
     return worldmap
 
 
@@ -38,20 +39,20 @@ def diamond(worldmap, coords, iteration):
     x = math.ceil((coords[0] + coords[1]) / 2.0)
     y = math.ceil((coords[2] + coords[3]) / 2.0)
 
-    if worldmap[x, y] is None or worldmap[x, y].locked is False:
-        for key in worldmap.ds_generated:
-            corner_a = worldmap.get((coords[0], coords[2]), key)
-            corner_b = worldmap.get((coords[0], coords[3]), key)
-            corner_c = worldmap.get((coords[1], coords[2]), key)
-            corner_d = worldmap.get((coords[1], coords[3]), key)
+    if worldmap[x, y] is None or not worldmap[x, y]['locked']:
+        for key in worldmaps.ds_generated:
+            corner_a = worldmap[coords[0], coords[2]][key]
+            corner_b = worldmap[coords[0], coords[3]][key]
+            corner_c = worldmap[coords[1], coords[2]][key]
+            corner_d = worldmap[coords[1], coords[3]][key]
             values = (corner_a, corner_b, corner_c, corner_d)
             if key == 'smoothness':
                 value = get_value(values, iteration)
             else:
                 smoothness = worldmap[x, y]['smoothness']
                 value = get_value(values, iteration, smoothness)
-            worldmap.add((x, y), key, value)
-        worldmap[x, y].locked = True
+            worldmap[x, y][key] = value
+        worldmap[x, y]['locked'] = True
 
 
 def square(worldmap, coords, iteration):
@@ -86,20 +87,19 @@ def get_value(values=1, iteration=1, smoothing=1):
 def seed_corners(worldmap):
     """Get values for the corners of the wm array."""
     print "Seeding corners..."
-    for key in worldmap.ds_generated:
+    for key in worldmaps.ds_generated:
         value_a = get_value()
         value_b = get_value()
 
-        worldmap.add((0, 0), key, value_a)
-        worldmap.add((-1, 0), key, value_a)
+        worldmap[0, 0][key] += value_a
+        worldmap[-1, 0][key] += value_a
+        worldmap[0, -1][key] += value_b
+        worldmap[-1, -1][key] += value_b
 
-        worldmap.add((0, -1), key, value_b)
-        worldmap.add((-1, -1), key, value_b)
-
-    worldmap.lock((0, 0))
-    worldmap.lock((0, -1))
-    worldmap.lock((-1, 0))
-    worldmap.lock((-1, -1))
+    worldmap[0, 0]['locked'] = True
+    worldmap[-1, 0]['locked'] = True
+    worldmap[0, -1]['locked'] = True
+    worldmap[-1, -1]['locked'] = True
 
 
 def sew_seams(worldmap):

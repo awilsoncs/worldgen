@@ -32,9 +32,9 @@ def set_oceans(world_map, depth):
     print "Filling oceans..."
     for (_, _), location in np.ndenumerate(world_map):
         if location['elevation'] <= depth:
-            location['ocean'] = 1.0
+            location['water depth'] = 1.0
         else:
-            location['ocean'] = 0.0
+            location['water depth'] = 0.0
 
 
 def draw_wind(world_map, start_at, stop_at, direction):
@@ -47,7 +47,7 @@ def draw_wind(world_map, start_at, stop_at, direction):
 
     for y in range(start_at, stop_at, step):
         for (x, y2), cell in np.ndenumerate(moisture_array):
-            if world_map[x, y]['ocean']:
+            if world_map[x, y]['water depth']:
                 moisture = float(config_file['moisture_pickup'])
                 moisture_array[x, y2] += moisture
                 world_map[x, y]['precipitation'] = 0.0

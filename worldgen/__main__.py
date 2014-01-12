@@ -21,7 +21,7 @@ def main():
     y = int(config_file['size_y'])
     size = (x, y)
     scroll = int(config_file['scroll'])
-    worldmap = worldmaps.Worldmap(size)
+    worldmap = worldmaps.world_map(size)
     worldmap = dsprocess.process(worldmap)
 
     climate.build_climate(worldmap)
@@ -29,7 +29,7 @@ def main():
 
     pygame.init() 
     window = pygame.display.set_mode(size)
-    altview = views.ContourView(window, worldmap, 0.6)
+    altview = views.ContourView(window, worldmap, 0.5)
     #altview = views.PrecipitationView(window, worldmap)
     altview.render()
     pygame.display.flip()
@@ -43,12 +43,7 @@ def main():
             elif event.type == pygame.MOUSEBUTTONDOWN:
                 pos = event.pos
                 print pos
-                print "Elevation: %f" % worldmap.get(pos, 'elevation')
-                print "Precipitation: %r" % worldmap.get(pos, 'precipitation')
-                if worldmap.get(pos, 'ocean'):
-                    print "Ocean"
-                else:
-                    print "Land"
+                print "Elevation: %f" % worldmap[pos[0], pos[1]]['elevation']
             elif event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_UP:
                     depth += float(config_file['ocean_change'])  
