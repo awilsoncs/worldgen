@@ -102,11 +102,12 @@ def square(layer, iteration, smoothing_layer=None):
 
     mid_x = midpoint(layer.shape[0])
     mid_y = midpoint(layer.shape[1])
-
     #layer[mid_x, 0] = get_value([layer[0, 0], layer[-1, 0]], iteration)
-    layer[mid_x, -1] = get_value([layer[0, -1], layer[-1, -1]], iteration)
+    if layer[mid_x, -1] == 0:
+        layer[mid_x, -1] = get_value([layer[0, -1], layer[-1, -1]], iteration)
     #layer[0, mid_y] = get_value([layer[0, 0], layer[0, -1]], iteration)
-    layer[-1, mid_y] = get_value([layer[-1, 0], layer[-1, -1]], iteration)
+    if layer[-1, mid_y] == 0:
+        layer[-1, mid_y] = get_value([layer[-1, 0], layer[-1, -1]], iteration)
 
 
 def midpoint(length):
