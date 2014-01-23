@@ -11,11 +11,13 @@ def process(worldmap):
     sew_seams(smoothness)
     print "Processing smoothness"
     ds_process(smoothness)
+    scaling.scale(smoothness)
     for key in worldmaps.ds_generated:
+        print key
         layer = worldmap[key]
         seed_corners(layer)
         sew_seams(layer)
-        ds_process(layer)
+        ds_process(layer, smoothing_layer=worldmap['smoothness'])
         scaling.scale(layer)
     return worldmap
 
@@ -71,6 +73,21 @@ def ds_process(layer, iteration=1, smoothing_layer=None):
             layer[mid_x:, :mid_y + 1] = ds_process(layer[mid_x:, :mid_y + 1], next_iter)
             layer[:mid_x + 1, mid_y:] = ds_process(layer[:mid_x + 1, mid_y:], next_iter)
             layer[mid_x:, mid_y:] = ds_process(layer[mid_x:, mid_y:], next_iter)
+    else:
+        if mid_x > 1 or mid_y > 1:
+            layer[:mid_x + 1, :mid_y + 1] = ds_process(layer[:mid_x + 1, :mid_y + 1],
+                                                       next_iter,
+                                                       smoothing_layer=smoothing_layer[:mid_x + 1, :mid_y + 1])
+            layer[mid_x:, :mid_y + 1] = ds_process(layer[mid_x:, :mid_y + 1],
+                                                   next_iter,
+                                                   smoothing_layer=smoothing_layer[mid_x:, :mid_y + 1])
+            layer[:mid_x + 1, mid_y:] = ds_process(layer[:mid_x + 1, mid_y:],
+                                                   next_iter,
+                                                   smoothing_layer=smoothing_layer[:mid_x + 1, mid_y:])
+            layer[mid_x:, mid_y:] = ds_process(layer[mid_x:, mid_y:],
+                                               next_iter,
+                                               smoothing_layer=smoothing_layer[mid_x:, mid_y:])
+    #TODO Not building the map with the smoothing layer attached
     return layer
 
 
@@ -135,6 +152,6 @@ def get_value(values=1, iteration=1, smoothing=1):
         value = values
     else:
         value = float(sum(values)) / float(len(values))
-    variance = smoothing * 5
+    variance = 5 * smoothing
     noise = random.uniform(-1.0, 1.0) * variance / float(iteration)
     return value + noise
