@@ -29,7 +29,7 @@ def main():
 
     pygame.init() 
     window = pygame.display.set_mode(size)
-    layer = np.copy(worldmap['smoothness'])
+    layer = np.copy(worldmap['elevation'])
     altview = views.RedGreenView(window, layer)
     #altview = views.PrecipitationView(window, worldmap)
     altview.render()
