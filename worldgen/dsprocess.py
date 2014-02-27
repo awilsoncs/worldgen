@@ -2,61 +2,77 @@ import random
 
 import scaling
 import worldmaps
+import numpy as np
+
+SOUTH_WEST = [0, 0]
+NORTH_WEST = [0, -1]
+SOUTH_EAST = [-1, 0]
+NORTH_EAST = [-1, -1]
 
 
 def process(worldmap):
     """Populate and return a Worldmap with values."""
     smoothness = worldmap['smoothness']
-    seed_corners(smoothness)
-    sew_seams(smoothness)
+    seed_corners(worldmap)
+    sew_seams(worldmap)
     print "Processing smoothness"
     ds_process(smoothness)
     scaling.scale(smoothness)
     for key in worldmaps.ds_generated:
         print key
         layer = worldmap[key]
-        seed_corners(layer)
-        sew_seams(layer)
         ds_process(layer, smoothing_layer=worldmap['smoothness'])
         scaling.scale(layer)
     return worldmap
 
 
-def seed_corners(layer):
+def seed_corners(worldmap):
     """Get values for the corners of the wm array."""
     print "Seeding corners..."
-    value_a = get_value()
-    value_b = get_value()
 
-    layer[0, 0] += value_a
-    layer[-1, 0] += value_a
-    layer[-1, -1] += value_b
-    layer[0, -1] += value_b
+    #Only get the western corners, we're going to seed the eastern ones from these.
+    worldmap[0, 0] = stack_value(worldmap[0, 0])
+    worldmap[0, -1] = stack_value(worldmap[0, -1])
 
 
-def sew_seams(layer):
+def sew_seams(worldmap):
     """Insert values into the edges of the map to create continuous lines."""
     print "Sewing seams..."
 
     ## Vertical seams
-    layer[0,] = sew_vertical(layer[0,])
-    layer[-1,] = layer[0,]
+    worldmap[0, ] = sew_vertical(worldmap[0])
+    worldmap[-1, ] = worldmap[0, ]
 
     ## Horizontal seams
-    north_loc = layer[0, 0]
-    south_loc = layer[0, -1]
-    for x in xrange(layer.shape[0]):
-        layer[x, 0] = north_loc
-        layer[x, -1] = south_loc
+    worldmap[:, 0] = worldmap[0, 0]
+    worldmap[:, -1] = worldmap[0, -1]
 
 
 def sew_vertical(seam, iteration=1):
     mid_y = midpoint(seam.shape[0])
-    seam[mid_y] = get_value([seam[0], seam[-1]], iteration)
+    print seam[0]
+    #seam[mid_y] = stack_value(seam[mid_y], [seam[0], seam[-1]], iteration)
+    for key in worldmaps.ds_generated:
+        seam[mid_y][key] = get_value([seam[0][key], seam[-1][key]], iteration)
     if mid_y > 1:
         seam[:mid_y + 1] = sew_vertical(seam[:mid_y + 1], iteration + 1)
         seam[mid_y:] = sew_vertical(seam[mid_y:], iteration + 1)
     return seam
+
+
+def stack_value(stack, values=None, iteration=1, smoothing=1):
+    if values is None:
+        values = np.ones(stack.size, dtype=[('smoothness', 'float16'),
+                                            ('elevation', 'float16')])
+    else:
+        #TODO This does not work. We need a workaround to average the values.
+        values = float(sum(values)) / float(len(values))
+    variance = 5 * smoothing
+
+    for key in worldmaps.ds_generated:
+        noise = random.uniform(-1.0, 1.0) * variance / float(iteration)
+        stack[key] = values[key] + noise
+    return stack
 
 
 def ds_process(layer, iteration=1, smoothing_layer=None):
@@ -67,6 +83,8 @@ def ds_process(layer, iteration=1, smoothing_layer=None):
     square(layer, iteration, smoothing_layer)
 
     next_iter = iteration + 1
+
+    #Recursion on each quadrant.
     if smoothing_layer is None:
         if mid_x > 1 or mid_y > 1:
             layer[:mid_x + 1, :mid_y + 1] = ds_process(layer[:mid_x + 1, :mid_y + 1], next_iter)
@@ -87,7 +105,6 @@ def ds_process(layer, iteration=1, smoothing_layer=None):
             layer[mid_x:, mid_y:] = ds_process(layer[mid_x:, mid_y:],
                                                next_iter,
                                                smoothing_layer=smoothing_layer[mid_x:, mid_y:])
-    #TODO Not building the map with the smoothing layer attached
     return layer
 
 
