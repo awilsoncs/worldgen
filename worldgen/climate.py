@@ -4,6 +4,11 @@ import numpy as np
 from config import Config
 
 
+def process(world_map):
+    print "Building Climates..."
+    return world_map
+
+
 def build_climate(world_map):
     set_oceans(world_map, 0.6)
 

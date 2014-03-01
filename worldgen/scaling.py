@@ -4,7 +4,6 @@ import numpy as np
 
 def scale(layer):
     """Scale all values in the array to 0.0-1.0 floats."""
-    print "Scaling array..."
     high = layer.max()
     low = layer.min()
     rng = high - low

@@ -12,14 +12,15 @@ NORTH_EAST = [-1, -1]
 
 def process(worldmap):
     """Populate and return a Worldmap with values."""
+    print "Building Geology..."
     smoothness = worldmap['smoothness']
-    seed_corners(worldmap)
-    sew_seams(worldmap)
-    print "Processing smoothness"
     ds_process(smoothness)
     scaling.scale(smoothness)
+    print "-Processing smoothness"
+    seed_corners(worldmap)
+    sew_seams(worldmap)
     for key in worldmaps.ds_generated:
-        print key
+        print "-Processing %s" % key
         layer = worldmap[key]
         ds_process(layer, smoothing_layer=worldmap['smoothness'])
         scaling.scale(layer)
@@ -28,7 +29,7 @@ def process(worldmap):
 
 def seed_corners(worldmap):
     """Get values for the corners of the wm array."""
-    print "Seeding corners..."
+    print "-Seeding corners..."
 
     #Only get the western corners, we're going to seed the eastern ones from these.
     worldmap[0, 0] = stack_value(worldmap[0, 0])
@@ -37,7 +38,7 @@ def seed_corners(worldmap):
 
 def sew_seams(worldmap):
     """Insert values into the edges of the map to create continuous lines."""
-    print "Sewing seams..."
+    print "-Sewing seams..."
 
     ## Vertical seams
     worldmap[0, ] = sew_vertical(worldmap[0])
@@ -50,7 +51,6 @@ def sew_seams(worldmap):
 
 def sew_vertical(seam, iteration=1):
     mid_y = midpoint(seam.shape[0])
-    print seam[0]
     #seam[mid_y] = stack_value(seam[mid_y], [seam[0], seam[-1]], iteration)
     for key in worldmaps.ds_generated:
         seam[mid_y][key] = get_value([seam[0][key], seam[-1][key]], iteration)
@@ -63,7 +63,10 @@ def sew_vertical(seam, iteration=1):
 def stack_value(stack, values=None, iteration=1, smoothing=1):
     if values is None:
         values = np.ones(stack.size, dtype=[('smoothness', 'float16'),
-                                            ('elevation', 'float16')])
+                                            ('elevation', 'float16'),
+                                            ('volcanism', 'float16'),
+                                            ('solubility', 'float16'),
+                                            ('minerals', 'float16')])
     else:
         #TODO This does not work. We need a workaround to average the values.
         values = float(sum(values)) / float(len(values))
@@ -82,34 +85,34 @@ def ds_process(layer, iteration=1, smoothing_layer=None):
     diamond(layer, iteration, smoothing_layer)
     square(layer, iteration, smoothing_layer)
 
-    next_iter = iteration + 1
+    next_iteration = iteration + 1
 
     #Recursion on each quadrant.
     if smoothing_layer is None:
         if mid_x > 1 or mid_y > 1:
-            layer[:mid_x + 1, :mid_y + 1] = ds_process(layer[:mid_x + 1, :mid_y + 1], next_iter)
-            layer[mid_x:, :mid_y + 1] = ds_process(layer[mid_x:, :mid_y + 1], next_iter)
-            layer[:mid_x + 1, mid_y:] = ds_process(layer[:mid_x + 1, mid_y:], next_iter)
-            layer[mid_x:, mid_y:] = ds_process(layer[mid_x:, mid_y:], next_iter)
+            layer[:mid_x + 1, :mid_y + 1] = ds_process(layer[:mid_x + 1, :mid_y + 1], next_iteration)
+            layer[mid_x:, :mid_y + 1] = ds_process(layer[mid_x:, :mid_y + 1], next_iteration)
+            layer[:mid_x + 1, mid_y:] = ds_process(layer[:mid_x + 1, mid_y:], next_iteration)
+            layer[mid_x:, mid_y:] = ds_process(layer[mid_x:, mid_y:], next_iteration)
     else:
         if mid_x > 1 or mid_y > 1:
             layer[:mid_x + 1, :mid_y + 1] = ds_process(layer[:mid_x + 1, :mid_y + 1],
-                                                       next_iter,
+                                                       next_iteration,
                                                        smoothing_layer=smoothing_layer[:mid_x + 1, :mid_y + 1])
             layer[mid_x:, :mid_y + 1] = ds_process(layer[mid_x:, :mid_y + 1],
-                                                   next_iter,
+                                                   next_iteration,
                                                    smoothing_layer=smoothing_layer[mid_x:, :mid_y + 1])
             layer[:mid_x + 1, mid_y:] = ds_process(layer[:mid_x + 1, mid_y:],
-                                                   next_iter,
+                                                   next_iteration,
                                                    smoothing_layer=smoothing_layer[:mid_x + 1, mid_y:])
             layer[mid_x:, mid_y:] = ds_process(layer[mid_x:, mid_y:],
-                                               next_iter,
+                                               next_iteration,
                                                smoothing_layer=smoothing_layer[mid_x:, mid_y:])
     return layer
 
 
 def diamond(layer, iteration, smoothing_layer=None):
-    """Set the center of coords to the average of the four corners, plus
+    """Set the center of layer to the average of the four corners, plus
     random noise.   
     """
     mid_x = midpoint(layer.shape[0])
@@ -130,6 +133,7 @@ def diamond(layer, iteration, smoothing_layer=None):
 
 
 def square(layer, iteration, smoothing_layer=None):
+
     #Edges of the layer
 
     mid_x = midpoint(layer.shape[0])

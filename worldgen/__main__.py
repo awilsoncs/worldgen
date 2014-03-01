@@ -23,6 +23,7 @@ def main():
     scroll = int(config_file['scroll'])
     worldmap = worldmaps.world_map(size)
     worldmap = dsprocess.process(worldmap)
+    worldmap = climate.process(worldmap)
 
     #climate.build_climate(worldmap)
     #scaling.scale(worldmap, ['precipitation'])
