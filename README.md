@@ -4,10 +4,22 @@ worldgen 0.2 alpha
 A world generator, designed for worldbuilders and DMs who want information beyond maps.
 
 ## Using worldgen
-To use worldgen, enter
 
-    python worldgen [x] [y]
+The software does not currently accept any flags or parameters. It will generate a config file when it runs for the first time (or if the config file has been deleted).
 
-while in the project folder, where x and y are one plus any power of two (33, 65, 129, 513). The program should output a map after several seconds. On slower computers, maps larger than 513x513 can take a minute or more.
+Generating the map may take longer than expected. Large maps (dimensions larger than 513x513) can take several minutes.
 
-Also, the up and down keys will re-render the map higher and lower oceans, respectively.
+## Config File
+
+======Parameters=====
+size_x: the x dimension of the map
+size_y: the y dimension of the map
+depth: the depth of the ocean, a float between 0 and 1.
+
+=======Climate=======
+moisture_pickup: Float. The rate of moisture pickup from trade winds.
+moisture_drop: Float. The rate of precipitation dropped on land from trade winds.
+winds: Integer. How rapidly the trade winds cross the map.
+
+=======Controls======
+scroll=5
