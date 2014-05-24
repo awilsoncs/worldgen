@@ -35,4 +35,4 @@ winds: Integer. How rapidly the trade winds cross the map.
 
 =======Controls======
 
-scroll=5
+scroll: Integer. The left/right motion when a key is pressed while viewing the map.
