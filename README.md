@@ -18,14 +18,21 @@ The config file can be found in the program directory as
 The parameters are as follows-
 
 ======Parameters=====
+
 size_x: the x dimension of the map
+
 size_y: the y dimension of the map
+
 depth: the depth of the ocean, a float between 0 and 1.
 
 =======Climate=======
+
 moisture_pickup: Float. The rate of moisture pickup from trade winds.
+
 moisture_drop: Float. The rate of precipitation dropped on land from trade winds.
+
 winds: Integer. How rapidly the trade winds cross the map.
 
 =======Controls======
+
 scroll=5
