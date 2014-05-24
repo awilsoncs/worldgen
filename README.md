@@ -11,6 +11,12 @@ Generating the map may take longer than expected. Large maps (dimensions larger 
 
 ## Config File
 
+The config file can be found in the program directory as
+
+    config.py
+
+The parameters are as follows-
+
 ======Parameters=====
 size_x: the x dimension of the map
 size_y: the y dimension of the map
