@@ -9,7 +9,6 @@ from config import Config
 import dsprocess
 import worldmaps
 import views
-import scaling
 
 
 def main():
@@ -46,12 +45,9 @@ def main():
                 pos = event.pos
                 print pos
                 print "Elevation: %f" % worldmap[pos[0], pos[1]]['elevation']
+                print "Depth: %f" % worldmap[pos[0], pos[1]]['water depth']
             elif event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_UP:
-                    depth += float(config_file['ocean_change'])  
-                elif event.key == pygame.K_DOWN:
-                    depth -= float(config_file['ocean_change']) 
-                elif event.key == pygame.K_RIGHT:
+                if event.key == pygame.K_RIGHT:
                     layer = np.roll(layer, scroll, axis=0)
                 elif event.key == pygame.K_LEFT:
                     layer = np.roll(layer, -1 * scroll, axis=0)

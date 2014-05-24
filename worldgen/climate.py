@@ -1,4 +1,5 @@
 import math
+
 import numpy as np
 
 from config import Config
@@ -6,6 +7,7 @@ from config import Config
 
 def process(world_map):
     print "Building Climates..."
+    flood_fill(world_map.shape[0] / 2, world_map.shape[1] / 2, world_map, 0.6)
     return world_map
 
 
@@ -40,6 +42,24 @@ def set_oceans(world_map, depth):
             location['water depth'] = 1.0
         else:
             location['water depth'] = 0.0
+
+
+def flood_fill(x, y, world_map, depth):
+    print "-Filling oceans"
+    queue = [(x, y)]
+    while len(queue) > 0:
+        node = queue.pop()
+        node_x, node_y = node[0], node[1]
+        node_x = (node_x + world_map.shape[0] - 1) % (world_map.shape[0] - 1)
+        location = world_map[node_x, node_y]
+        if location['elevation'] < depth and location['water depth'] == 0:
+            location['water depth'] = depth - location['elevation']
+            queue.append((node_x + 1, node_y))
+            queue.append((node_x - 1, node_y))
+            if node_y < world_map.shape[1] - 1:
+                queue.append((node_x, node_y + 1))
+            if node_y > 0:
+                queue.append((node_x, node_y - 1))
 
 
 def draw_wind(world_map, start_at, stop_at, direction):

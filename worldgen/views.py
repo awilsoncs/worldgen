@@ -2,8 +2,7 @@ import numpy as np
 import pygame
 
 
-
-class MapView(object):
+class LayerView(object):
     def __init__(self, surface, layer):
         self.layer = layer
         self.surface = surface
@@ -18,9 +17,9 @@ class MapView(object):
         pass
 
 
-class RedGreenView(MapView):
+class RedGreenView(LayerView):
     def __init__(self, surface, layer):
-        MapView.__init__(self, surface, layer)
+        LayerView.__init__(self, surface, layer)
 
     def paint(self, pxarray):
         """Returns a pxarray based on 'elevation' of Worldmap."""

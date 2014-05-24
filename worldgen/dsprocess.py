@@ -1,8 +1,9 @@
 import random
 
+import numpy as np
+
 import scaling
 import worldmaps
-import numpy as np
 
 SOUTH_WEST = [0, 0]
 NORTH_WEST = [0, -1]
@@ -112,8 +113,7 @@ def ds_process(layer, iteration=1, smoothing_layer=None):
 
 
 def diamond(layer, iteration, smoothing_layer=None):
-    """Set the center of layer to the average of the four corners, plus
-    random noise.   
+    """Set the center of layer to the average of the four corners, plus random noise.
     """
     mid_x = midpoint(layer.shape[0])
     mid_y = midpoint(layer.shape[1])
@@ -133,30 +133,36 @@ def diamond(layer, iteration, smoothing_layer=None):
 
 
 def square(layer, iteration, smoothing_layer=None):
-
-    #Edges of the layer
-
+    """
+    Perform the square step of the Diamond-Square algorithm. Assign the results
+    @param layer:
+    @param iteration:
+    @param smoothing_layer:
+    """
     mid_x = midpoint(layer.shape[0])
     mid_y = midpoint(layer.shape[1])
     #Amusing bugs, may re-implement later as an option
     #layer[mid_x, 0] = get_value([layer[0, 0], layer[-1, 0]], iteration)
     #layer[0, mid_y] = get_value([layer[0, 0], layer[0, -1]], iteration)
+    layer_ne = layer[-1, -1]
+    layer_se = layer[-1, 0]
+    layer_nw = layer[0, -1]
     if smoothing_layer is None:
         if layer[mid_x, -1] == 0:
-            layer[mid_x, -1] = get_value([layer[0, -1], layer[-1, -1]], iteration)
+            layer[mid_x, -1] = get_value([layer_nw, layer_ne], iteration)
         if layer[-1, mid_y] == 0:
-            layer[-1, mid_y] = get_value([layer[-1, 0], layer[-1, -1]], iteration)
+            layer[-1, mid_y] = get_value([layer_se, layer_ne], iteration)
     else:
         if layer[mid_x, -1] == 0:
             smoothness = smoothing_layer[mid_x, -1]
-            layer[mid_x, -1] = get_value([layer[0, -1], layer[-1, -1]], iteration, smoothness)
+            layer[mid_x, -1] = get_value([layer_nw, layer_ne], iteration, smoothness)
         if layer[-1, mid_y] == 0:
             smoothness = smoothing_layer[-1, mid_y]
-            layer[-1, mid_y] = get_value([layer[-1, 0], layer[-1, -1]], iteration, smoothness)
+            layer[-1, mid_y] = get_value([layer_se, layer_ne], iteration, smoothness)
 
 
 def midpoint(length):
-    """
+    """Return an integer midpoint of a given length.
     @param length: integer
     @return: integer
     """

@@ -7,8 +7,10 @@ ds_generated = ['elevation',
 
 
 def world_map(size):
-    return np.zeros(size, dtype=[('smoothness', 'float16'),
+    return np.zeros(size, dtype=[('depth', 'float16'),
+                                 ('smoothness', 'float16'),
                                  ('elevation', 'float16'),
                                  ('volcanism', 'float16'),
                                  ('solubility', 'float16'),
-                                 ('minerals', 'float16')])
+                                 ('minerals', 'float16'),
+                                 ('water depth', 'float16')])
