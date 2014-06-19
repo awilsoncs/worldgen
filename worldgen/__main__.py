@@ -29,7 +29,7 @@ def main():
 
     pygame.init() 
     window = pygame.display.set_mode(size)
-    layer = np.copy(world_map['elevation'])
+    layer = np.copy(world_map['smoothness'])
     elevation_view = views.BlackWhiteView(window, layer)
     #elevation_view = views.PrecipitationView(window, world_map)
     elevation_view.render()

@@ -77,32 +77,6 @@ def sew_vertical(seam, iteration=1):
     return seam
 
 
-def stack_value(stack, values=None, iteration=1, smoothing=1):
-    """
-
-    @param stack:
-    @param values:
-    @param iteration:
-    @param smoothing:
-    @return:
-    """
-    if values is None:
-        values = np.ones(stack.size, dtype=[('smoothness', 'float16'),
-                                            ('elevation', 'float16'),
-                                            ('volcanism', 'float16'),
-                                            ('solubility', 'float16'),
-                                            ('minerals', 'float16')])
-    else:
-        #TODO This does not work. We need a workaround to average the values.
-        values = float(sum(values)) / float(len(values))
-    variance = 5 * smoothing
-
-    for key in worldmaps.ds_generated:
-        noise = random.uniform(-1.0, 1.0) * variance / float(iteration)
-        stack[key] = values[key] + noise
-    return stack
-
-
 def ds_process(layer, iteration=1, smoothing_layer=None):
     """
 
@@ -131,18 +105,16 @@ def ds_process(layer, iteration=1, smoothing_layer=None):
             layer[mid_x:, mid_y:] = ds_process(layer[mid_x:, mid_y:], next_iteration)
     else:
         if mid_x > 1 or mid_y > 1:
-            layer[:mid_x + 1, :mid_y + 1] = ds_process(layer[:mid_x + 1, :mid_y + 1],
-                                                       next_iteration,
-                                                       smoothing_layer=smoothing_layer[:mid_x + 1, :mid_y + 1])
-            layer[mid_x:, :mid_y + 1] = ds_process(layer[mid_x:, :mid_y + 1],
-                                                   next_iteration,
-                                                   smoothing_layer=smoothing_layer[mid_x:, :mid_y + 1])
-            layer[:mid_x + 1, mid_y:] = ds_process(layer[:mid_x + 1, mid_y:],
-                                                   next_iteration,
-                                                   smoothing_layer=smoothing_layer[:mid_x + 1, mid_y:])
-            layer[mid_x:, mid_y:] = ds_process(layer[mid_x:, mid_y:],
-                                               next_iteration,
-                                               smoothing_layer=smoothing_layer[mid_x:, mid_y:])
+            smoothing_sw = smoothing_layer[:mid_x + 1, :mid_y + 1]
+            smoothing_nw = smoothing_layer[mid_x:, :mid_y + 1]
+            smoothing_se = smoothing_layer[:mid_x + 1, mid_y:]
+            smoothing_ne = smoothing_layer[mid_x:, mid_y:]
+
+            layer[:mid_x + 1, :mid_y + 1] = ds_process(layer[:mid_x + 1, :mid_y + 1], next_iteration, smoothing_sw)
+            layer[mid_x:, :mid_y + 1] = ds_process(layer[mid_x:, :mid_y + 1], next_iteration, smoothing_nw)
+            layer[:mid_x + 1, mid_y:] = ds_process(layer[:mid_x + 1, mid_y:], next_iteration, smoothing_se)
+            layer[mid_x:, mid_y:] = ds_process(layer[mid_x:, mid_y:], next_iteration, smoothing_ne)
+
     return layer
 
 
@@ -234,6 +206,5 @@ def get_value(value=1.0, iteration=1, smoothing=1.0):
     @rtype : float
     """
 
-    variance = 1
-    noise = random.uniform(-1.0, 1.0) * variance / float(iteration)
+    noise = random.uniform(-1.0, 1.0) * smoothing / float(iteration)
     return value + noise
