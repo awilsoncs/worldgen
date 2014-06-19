@@ -11,13 +11,14 @@ SOUTH_EAST = [-1, 0]
 NORTH_EAST = [-1, -1]
 
 
-def process(world_map):    
+def process(world_map):
     """
     Construct the world map.
+
     @rtype : recarray
-    @param world_map: recarray
+    @type world_map: recarray
     """
-    
+
     print "Building Geology..."
     smoothness = world_map['smoothness']
     ds_process(smoothness)
@@ -57,9 +58,11 @@ def sew_seams(world_map):
     world_map[:, -1] = world_map[0, -1]
 
 
+# @TODO Vertical seam is noticeable in final map. It should not be.
 def sew_vertical(seam, iteration=1):
     """
 
+    @type seam:
     @param seam:
     @param iteration:
     @return:
@@ -67,7 +70,7 @@ def sew_vertical(seam, iteration=1):
     mid_y = midpoint(seam.shape[0])
     #seam[mid_y] = stack_value(seam[mid_y], [seam[0], seam[-1]], iteration)
     for key in worldmaps.ds_generated:
-        seam[mid_y][key] = get_value([seam[0][key], seam[-1][key]], iteration)
+        seam[mid_y][key] = get_value_from_list([seam[0][key], seam[-1][key]], iteration)
     if mid_y > 1:
         seam[:mid_y + 1] = sew_vertical(seam[:mid_y + 1], iteration + 1)
         seam[mid_y:] = sew_vertical(seam[mid_y:], iteration + 1)
@@ -103,6 +106,8 @@ def stack_value(stack, values=None, iteration=1, smoothing=1):
 def ds_process(layer, iteration=1, smoothing_layer=None):
     """
 
+
+    @rtype : ndarray
     @param layer:
     @param iteration:
     @param smoothing_layer:
@@ -157,23 +162,23 @@ def diamond(layer, iteration, smoothing_layer=None):
         corner_b = layer[0, -1]
         corner_c = layer[-1, 0]
         corner_d = layer[-1, 0]
-        values = (corner_a, corner_b, corner_c, corner_d)
+        values = [corner_a, corner_b, corner_c, corner_d]
         if smoothing_layer is None:
-            value = get_value(values, iteration)
+            value = get_value_from_list(values=values, iteration=iteration)
         else:
             smoothness = smoothing_layer[mid_x, mid_y]
-            value = get_value(values, iteration, smoothness)
+            value = get_value_from_list(values=values, iteration=iteration, smoothing=smoothness)
         layer[mid_x, mid_y] = value
 
 
 def square(layer, iteration, smoothing_layer=None):
     """
     Perform the Square step of the Diamond-Square algorithm on layer.
-    @type  layer: array of floats
+    @type  layer: recarray
     @param layer: a single record of a world map
     @type  iteration: integer
     @param iteration: the iteration of the Diamond Square algorithm
-    @type  smoothing_layer: array of floats
+    @type  smoothing_layer: recarray
     @param smoothing_layer:
     """
 
@@ -184,39 +189,49 @@ def square(layer, iteration, smoothing_layer=None):
     layer_nw = layer[0, -1]
     if smoothing_layer is None:
         if layer[mid_x, -1] == 0:
-            layer[mid_x, -1] = get_value([layer_nw, layer_ne], iteration)
+            layer[mid_x, -1] = get_value_from_list([layer_nw, layer_ne], iteration)
         if layer[-1, mid_y] == 0:
-            layer[-1, mid_y] = get_value([layer_se, layer_ne], iteration)
+            layer[-1, mid_y] = get_value_from_list([layer_se, layer_ne], iteration)
     else:
         if layer[mid_x, -1] == 0:
             smoothness = smoothing_layer[mid_x, -1]
-            layer[mid_x, -1] = get_value([layer_nw, layer_ne], iteration, smoothness)
+            layer[mid_x, -1] = get_value_from_list([layer_nw, layer_ne], iteration, smoothness)
         if layer[-1, mid_y] == 0:
             smoothness = smoothing_layer[-1, mid_y]
-            layer[-1, mid_y] = get_value([layer_se, layer_ne], iteration, smoothness)
+            layer[-1, mid_y] = get_value_from_list([layer_se, layer_ne], iteration, smoothness)
 
 
 def midpoint(length):
     """Return an integer midpoint of a given length.
+    @rtype : int
     @param length: integer
     @return: integer
     """
 
-    if length > 2:
-        return int(length * 0.5)
-    return 1
+    return int(length * 0.5)
 
 
-def get_value(values=1, iteration=1, smoothing=1):
+def get_value_from_list(values=[], iteration=1, smoothing=1):
+    """
+
+    @param values:
+    @param iteration:
+    @param smoothing:
+    @return:
+    """
+    value = float(sum(values)) / float(len(values))
+    return get_value(value=value, iteration=iteration, smoothing=smoothing)
+
+
+def get_value(value=1, iteration=1, smoothing=1):
     """Return a float of random noise plus average of values.
-
+    @type value: int
+    @param value:
+    @param iteration: 
+    @param smoothing: 
     @rtype : float
     """
 
-    if isinstance(values, int):
-        value = values
-    else:
-        value = float(sum(values)) / float(len(values))
     variance = 5 * smoothing
     noise = random.uniform(-1.0, 1.0) * variance / float(iteration)
     return value + noise

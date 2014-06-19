@@ -2,6 +2,7 @@ import math
 
 import numpy as np
 
+
 def scale(layer):
     """Scale all values in the array to 0.0-1.0 floats."""
     high = layer.max()
@@ -11,7 +12,7 @@ def scale(layer):
 
 
 def elevation(x):
-    """Return float x adjusted for earthlike elevations"""
+    """Return float x adjusted for earth-like elevations"""
     vatan = np.vectorize(math.atan)
     y = 20 * x - 10
     y2 = x - 0.5

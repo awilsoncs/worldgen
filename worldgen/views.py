@@ -9,9 +9,9 @@ class LayerView(object):
 
     def render(self):
         """Renders a pxarray based on 'key' of Worldmap."""
-        pxarray = pygame.PixelArray(self.surface)
-        self.paint(pxarray)
-        del pxarray
+        pixel_array = pygame.PixelArray(self.surface)
+        self.paint(pixel_array)
+        del pixel_array
 
     def paint(self, pxarray):
         pass
@@ -21,10 +21,10 @@ class RedGreenView(LayerView):
     def __init__(self, surface, layer):
         LayerView.__init__(self, surface, layer)
 
-    def paint(self, pxarray):
+    def paint(self, pixel_array):
         """Returns a pxarray based on 'elevation' of Worldmap."""
         for (x, y), v in np.ndenumerate(self.layer):
             g = v * 255
             r = (255 - g) / 2
             b = g / 4
-            pxarray[x, y] = (r, g, b)
+            pixel_array[x, y] = (r, g, b)
