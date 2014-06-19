@@ -77,6 +77,32 @@ def sew_vertical(seam, iteration=1):
     return seam
 
 
+def stack_value(stack, values=None, iteration=1, smoothing=1):
+    """
+
+    @param stack:
+    @param values:
+    @param iteration:
+    @param smoothing:
+    @return:
+    """
+    if values is None:
+        values = np.ones(stack.size, dtype=[('smoothness', 'float16'),
+                                            ('elevation', 'float16'),
+                                            ('volcanism', 'float16'),
+                                            ('solubility', 'float16'),
+                                            ('minerals', 'float16')])
+    else:
+        #TODO This does not work. We need a workaround to average the values.
+        values = float(sum(values)) / float(len(values))
+    variance = 5 * smoothing
+
+    for key in worldmaps.ds_generated:
+        noise = random.uniform(-1.0, 1.0) * variance / float(iteration)
+        stack[key] = values[key] + noise
+    return stack
+
+
 def ds_process(layer, iteration=1, smoothing_layer=None):
     """
 
