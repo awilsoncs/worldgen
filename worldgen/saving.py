@@ -35,6 +35,10 @@ class SaveHandler():
         for key in self.world_map.dtype.names:
             self.layer_to_csv(key)
 
+    def layer_to_bitmap(self):
+        """Export a height map as a bitmap"""
+        raise NotImplementedError
+
 
 def _set_up_dir(path):
     try:
