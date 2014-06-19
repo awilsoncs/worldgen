@@ -17,12 +17,31 @@ class LayerView(object):
         pass
 
 
-class RedGreenView(LayerView):
+class BlackWhiteView(LayerView):
     def __init__(self, surface, layer):
+        """
+
+        @rtype : BlackWhiteView
+        """
         LayerView.__init__(self, surface, layer)
 
     def paint(self, pixel_array):
-        """Returns a pxarray based on 'elevation' of Worldmap."""
+        for (x, y), v in np.ndenumerate(self.layer):
+            g = v * 255
+            r = v * 255
+            b = v * 255
+            pixel_array[x, y] = (r, g, b)
+
+
+class RedGreenView(LayerView):
+    def __init__(self, surface, layer):
+        """
+
+        @rtype : RedGreenView
+        """
+        LayerView.__init__(self, surface, layer)
+
+    def paint(self, pixel_array):
         for (x, y), v in np.ndenumerate(self.layer):
             g = v * 255
             r = (255 - g) / 2

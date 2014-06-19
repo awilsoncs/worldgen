@@ -7,6 +7,10 @@ ds_generated = ['elevation',
 
 
 def world_map(size):
+    """
+    @type size : tuple
+    @rtype : recarray
+    """
     return np.zeros(size, dtype=[('depth', 'float16'),
                                  ('smoothness', 'float16'),
                                  ('elevation', 'float16'),

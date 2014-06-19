@@ -211,10 +211,10 @@ def midpoint(length):
     return int(length * 0.5)
 
 
-def get_value_from_list(values=[], iteration=1, smoothing=1):
+def get_value_from_list(values=[], iteration=1, smoothing=1.0):
     """
-
-    @param values:
+    @rtype : float
+    @param values: list
     @param iteration:
     @param smoothing:
     @return:
@@ -223,15 +223,17 @@ def get_value_from_list(values=[], iteration=1, smoothing=1):
     return get_value(value=value, iteration=iteration, smoothing=smoothing)
 
 
-def get_value(value=1, iteration=1, smoothing=1):
+def get_value(value=1.0, iteration=1, smoothing=1.0):
     """Return a float of random noise plus average of values.
-    @type value: int
+    @type value: float
+    @type iteration: int
+    @type smoothing: float
     @param value:
-    @param iteration: 
-    @param smoothing: 
+    @param iteration:
+    @param smoothing:
     @rtype : float
     """
 
-    variance = 5 * smoothing
+    variance = 1
     noise = random.uniform(-1.0, 1.0) * variance / float(iteration)
     return value + noise

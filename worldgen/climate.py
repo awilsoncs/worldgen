@@ -6,6 +6,10 @@ from config import Config
 
 
 def process(world_map):
+    """
+
+    @rtype : recarray
+    """
     print "Building Climates..."
     flood_fill(world_map.shape[0] / 2, world_map.shape[1] / 2, world_map, 0.6)
     return world_map
