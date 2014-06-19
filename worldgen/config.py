@@ -1,43 +1,36 @@
-class Config(dict):
-    def __init__(self, config_file, **kwargs):
-        """
-        @param config_file: filename of the config file
-        @param kwargs: additional config parameters
-        """
-        super(Config, self).__init__(**kwargs)
-        try:
-            self.get_configs(config_file)
-        except IOError:
-            print "Generating config file..."
-            with open(config_file, 'w') as f:
-                output = ""
-                for line in DEFAULTS:
-                    output += line
-                f.write(output)
-            self.get_configs(config_file)
+import ConfigParser
 
-    def get_configs(self, config_file):
-        with open(config_file, 'r') as f:
-            for line in f:
-                line = line.split('=')
-                if len(line) > 1:
-                    key = line[0]
-                    value = line[1]
-                    self[key] = value
+
+def _generate_default_file(path):
+    """
+    Build the default config file.
+    @param path: path to save the config file
+    @return: none
+    """
+    print "Generating config.ini..."
+    with open(path, 'w') as config_file:
+        config = ConfigParser.SafeConfigParser()
+        config.add_section('Parameters')
+        config.set('Parameters', 'size_x', 257)
+        config.set('Parameters', 'size_y', 129)
+        config.set('Parameters', 'depth', 0.6)
+        config.add_section('Climate')
+        config.set('Climate', 'moisture_pickup', 1.0)
+        config.set('Climate', 'moisture_drop', 0.5)
+        config.set('Climate', 'winds', 50)
+        config.add_section('Controls')
+        config.set('Controls', 'scroll', 5)
+        config.set('Controls', 'change_ocean', 0.005)
+        config.write(config_file)
+
+
+def get_config(config_file='config.ini'):
+    config = ConfigParser.SafeConfigParser()
+    try:
+        config.read(config_file)
+    except IOError:
+        _generate_default_file(config_file)
+        config.read(config_file)
+    return config
 
 verbose = False
-
-DEFAULTS = ['======Parameters=====\n',
-            'size_x=257\n',
-            'size_y=129\n',
-            'depth=0.6\n',
-            '\n',
-            '=======Climate=======\n',
-            'moisture_pickup=1.0\n',
-            'moisture_drop=0.5\n',
-            'winds=50\n',
-            '\n',
-            '=======Controls======\n',
-            'scroll=5\n',
-            'change_ocean=0.005\n'
-            ]

@@ -5,7 +5,7 @@ import pygame
 import numpy as np
 
 import climate
-from config import Config
+from config import get_config
 import dsprocess
 import worldmaps
 import views
@@ -14,12 +14,12 @@ import views
 def main():
     t = time.time()
 
-    config_file = Config('config.txt')
+    config_file = get_config()
 
-    x = int(config_file['size_x'])
-    y = int(config_file['size_y'])
+    x = config_file.getint('Parameters', 'size_x')
+    y = config_file.getint('Parameters', 'size_y')
     size = (x, y)
-    scroll = int(config_file['scroll'])
+    scroll = config_file.getint('Controls', 'scroll')
     world_map = worldmaps.world_map(size)
     world_map = dsprocess.process(world_map)
     world_map = climate.process(world_map)
@@ -31,7 +31,6 @@ def main():
     window = pygame.display.set_mode(size)
     layer = np.copy(world_map['elevation'])
     elevation_view = views.BlackWhiteView(window, layer)
-    #elevation_view = views.PrecipitationView(window, world_map)
     elevation_view.render()
     pygame.display.flip()
 

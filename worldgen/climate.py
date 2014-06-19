@@ -2,7 +2,7 @@ import math
 
 import numpy as np
 
-from config import Config
+from config import get_config
 
 
 def process(world_map):
@@ -71,18 +71,18 @@ def draw_wind(world_map, start_at, stop_at, direction):
     if start_at > stop_at:
         step = -1
     moisture_array = np.zeros((world_map.shape[0], 1))
-    config_file = Config('config.txt')
-    winds = int(config_file['winds'])
+    config_file = get_config()
+    winds = config_file.getint('Climate', 'winds')
 
     for y in range(start_at, stop_at, step):
         for (x, y2), cell in np.ndenumerate(moisture_array):
             if world_map[x, y]['water depth']:
-                moisture = float(config_file['moisture_pickup'])
+                moisture = config_file.getfloat('Climate', 'moisture_pickup')
                 moisture_array[x, y2] += moisture
                 world_map[x, y]['precipitation'] = 0.0
             else:
                 elevation = world_map[x, y]['elevation']
-                moisture = float(config_file['moisture_drop'])
+                moisture = config_file.getfloat('Climate', 'moisture_drop')
                 precipitation = moisture_array[x, y2] * (elevation - moisture)
                 moisture_array[x, y2] -= precipitation
                 world_map[x, y]['precipitation'] = precipitation
