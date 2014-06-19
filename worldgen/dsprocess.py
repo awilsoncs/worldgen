@@ -1,8 +1,10 @@
 import random
 import csv
+import zipfile
 
 import numpy as np
 
+import saving
 import scaling
 import worldmaps
 
@@ -20,14 +22,13 @@ def process(world_map):
     @type world_map: recarray
     """
 
+    #TODO Should separate this and the algorithm functions to provide portability.
+
     print "Building Geology..."
     smoothness = world_map['smoothness']
-    #TODO scaling the smoothness is the reason we can't process smoothness on the fly.
-    # If a workaround could be managed, it would clear up most of the edge wrapping problems.
     print "-Processing smoothness"
     ds_process(smoothness)
     scaling.scale(smoothness)
-    save_to_csv(smoothness, 'smoothness.csv')
     seed_corners(world_map)
     sew_seams(world_map)
     for key in worldmaps.ds_generated:
@@ -35,11 +36,12 @@ def process(world_map):
         layer = world_map[key]
         ds_process(layer, smoothing_layer=world_map['smoothness'])
         scaling.scale(layer)
+    saving.SaveHandler(world_map, 'test').world_to_csv()
     return world_map
 
 
 def seed_corners(world_map):
-    """Get values for the corners of the wm array."""
+    """Set values to the corners of the world_map array."""
 
     print "-Seeding corners..."
 
@@ -49,13 +51,13 @@ def seed_corners(world_map):
 
 
 def sew_seams(world_map):
-    """Insert values into the edges of the map to create continuous lines."""
+    """Set values to the edges of the map to create continuous lines."""
 
     print "-Sewing seams..."
 
     ## Vertical seams
-    world_map[0,] = sew_vertical(world_map[0])
-    world_map[-1,] = world_map[0,]
+    world_map[0, ] = sew_vertical(world_map[0])
+    world_map[-1, ] = world_map[0, ]
 
     ## Horizontal seams - top and bottom rows are all equal values
     world_map[:, 0] = world_map[0, 0]
@@ -64,7 +66,6 @@ def sew_seams(world_map):
 
 def sew_vertical(seam, iteration=1):
     """
-
     @type seam:
     @param seam:
     @param iteration:
@@ -81,7 +82,13 @@ def sew_vertical(seam, iteration=1):
     return seam
 
 
-def stack_value(stack, values=None, iteration=1, smoothing=1):
+def stack_value(stack, values=None, iteration=1, smoothing=1.0):
+    """
+    @type stack: recarray
+    @type values: recarray
+    @type iteration: int
+    @type smoothing: float
+    """
     if values is None:
         values = np.ones(stack.size, dtype=[('smoothness', 'float16'),
                                             ('elevation', 'float16'),
@@ -145,9 +152,7 @@ def ds_process(layer, iteration=1, smoothing_layer=None):
 
 
 def _diamond(layer, iteration, smoothing_layer=None):
-    """
-    Perform the Diamond step of the Diamond-Square algorithm on layer.
-    """
+    """Perform the Diamond step of the Diamond-Square algorithm on layer."""
 
     mid_x = _midpoint(layer.shape[0])
     mid_y = _midpoint(layer.shape[1])
@@ -167,9 +172,7 @@ def _diamond(layer, iteration, smoothing_layer=None):
 
 
 def _square(layer, iteration, smoothing_layer=None):
-    """
-    Perform the Square step of the Diamond-Square algorithm on layer.
-    """
+    """Perform the Square step of the Diamond-Square algorithm on layer."""
 
     mid_x = _midpoint(layer.shape[0])
     mid_y = _midpoint(layer.shape[1])
@@ -200,12 +203,12 @@ def _midpoint(length):
     return int(length * 0.5)
 
 
-def _get_value_from_list(values=[], iteration=1, smoothing=1.0):
+def _get_value_from_list(values, iteration=1, smoothing=1.0):
     """
-    @rtype : float
-    @param values: list
+    @type values: list
     @param iteration:
     @param smoothing:
+    @rtype : float
     @return:
     """
     value = float(sum(values)) / float(len(values))
@@ -225,16 +228,3 @@ def _get_value(value=1.0, iteration=1, smoothing=1.0):
 
     noise = random.uniform(-1.0, 1.0) * smoothing / float(iteration)
     return value + noise
-
-
-def save_to_csv(layer, filename):
-    """
-    Save the layer height map to a CSV file.
-    @param layer: ndarray
-    @param filename:
-    @return:
-    """
-    with open(filename, "wb") as csvfile:
-        layer_writer = csv.writer(csvfile)
-        for y in range(layer.shape[0]):
-            layer_writer.writerow(layer[:, y])
