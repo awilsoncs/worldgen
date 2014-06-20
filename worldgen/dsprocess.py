@@ -1,9 +1,8 @@
 import random
-import csv
-import zipfile
 
 import numpy as np
 
+from config import get_config
 import saving
 import scaling
 import worldmaps
@@ -72,9 +71,8 @@ def sew_vertical(seam, iteration=1):
     @return:
     """
     mid_y = _midpoint(seam.shape[0])
-    #seam[mid_y] = stack_value(seam[mid_y], [seam[0], seam[-1]], iteration)
+    smoothing = seam[mid_y]["smoothness"]
     for key in worldmaps.ds_generated:
-        smoothing = seam[mid_y]["smoothness"]
         seam[mid_y][key] = _get_value_from_list([seam[0][key], seam[-1][key]], iteration, smoothing)
     if mid_y > 1:
         seam[:mid_y + 1] = sew_vertical(seam[:mid_y + 1], iteration + 1)
@@ -98,7 +96,7 @@ def stack_value(stack, values=None, iteration=1, smoothing=1.0):
     else:
         #TODO This does not work. We need a workaround to average the values.
         values = float(sum(values)) / float(len(values))
-    variance = 5 * smoothing
+    variance = get_config().getfloat('Parameters', 'variance') * smoothing
 
     for key in worldmaps.ds_generated:
         noise = random.uniform(-1.0, 1.0) * variance / float(iteration)
@@ -124,8 +122,8 @@ def ds_process(layer, iteration=1, smoothing_layer=None):
     mid_x = _midpoint(layer.shape[0])
     mid_y = _midpoint(layer.shape[1])
 
-    _diamond(layer, iteration, smoothing_layer)
     _square(layer, iteration, smoothing_layer)
+    _diamond(layer, iteration, smoothing_layer)
 
     next_iteration = iteration + 1
 
@@ -161,7 +159,7 @@ def _diamond(layer, iteration, smoothing_layer=None):
         corner_a = layer[0, 0]
         corner_b = layer[0, -1]
         corner_c = layer[-1, 0]
-        corner_d = layer[-1, 0]
+        corner_d = layer[-1, -1]
         values = [corner_a, corner_b, corner_c, corner_d]
         if smoothing_layer is None:
             value = _get_value_from_list(values=values, iteration=iteration)
@@ -226,5 +224,6 @@ def _get_value(value=1.0, iteration=1, smoothing=1.0):
     @rtype : float
     """
 
-    noise = random.uniform(-1.0, 1.0) * smoothing / float(iteration)
+    variance = get_config().getfloat('Parameters', 'variance') * smoothing
+    noise = random.uniform(-1.0, 1.0) * variance / float(iteration)
     return value + noise

@@ -14,6 +14,7 @@ def _generate_default_file(path):
         config.set('Parameters', 'size_x', '257')
         config.set('Parameters', 'size_y', '129')
         config.set('Parameters', 'depth', '0.6')
+        config.set('Parameters', 'variance', '5.0')
         config.add_section('Climate')
         config.set('Climate', 'moisture_pickup', '1.0')
         config.set('Climate', 'moisture_drop', '0.5')
