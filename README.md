@@ -13,18 +13,19 @@ Generating the map may take longer than expected. Large maps (dimensions larger 
 
 The config file can be found in the program directory as
 
-    config.py
+    config.ini
 
-The parameters are as follows-
+The options are as follows-
 
 ======Parameters=====
 
-size_x: the x dimension of the map
+size_x: Integer. The x dimension of the map. Must be a power of two, plus 1.
 
-size_y: the y dimension of the map
+size_y: Integer. The y dimension of the map. Must be a power of two, plus 1.
 
-depth: the depth of the ocean, a float between 0 and 1.
+depth: The depth of the ocean, a float between 0 and 1.
 
+variance:
 =======Climate=======
 
 moisture_pickup: Float. The rate of moisture pickup from trade winds.

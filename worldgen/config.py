@@ -26,10 +26,14 @@ def _generate_default_file(path):
 
 
 def get_config(config_file='config.ini'):
+    """
+
+    @rtype : ConfigParser
+    """
     config = ConfigParser.SafeConfigParser()
     if not config.read(config_file):
         _generate_default_file(config_file)
         config.read(config_file)
     return config
 
-verbose = False
+config = get_config()

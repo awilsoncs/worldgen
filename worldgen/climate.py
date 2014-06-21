@@ -11,12 +11,14 @@ def process(world_map):
     @rtype : recarray
     """
     print "Building Climates..."
-    flood_fill(world_map.shape[0] / 2, world_map.shape[1] / 2, world_map, 0.6)
+    elevation = world_map['elevation']
+    lowest_trench = np.unravel_index(elevation.argmin(), elevation.shape)
+    world_map = flood_fill(lowest_trench[0], lowest_trench[1], world_map, 0.6)
+    trade_winds(world_map)
     return world_map
 
 
-def build_climate(world_map):
-    set_oceans(world_map, 0.6)
+def trade_winds(world_map):
 
     # Southern westerlies
     start_at = int(world_map.shape[1] * 2.0 / 3.0)
@@ -57,13 +59,14 @@ def flood_fill(x, y, world_map, depth):
         node_x = (node_x + world_map.shape[0] - 1) % (world_map.shape[0] - 1)
         location = world_map[node_x, node_y]
         if location['elevation'] < depth and location['water depth'] == 0:
-            location['water depth'] = depth - location['elevation']
+            world_map[node_x, node_y]['water depth'] = depth - location['elevation']
             queue.append((node_x + 1, node_y))
             queue.append((node_x - 1, node_y))
             if node_y < world_map.shape[1] - 1:
                 queue.append((node_x, node_y + 1))
             if node_y > 0:
                 queue.append((node_x, node_y - 1))
+    return world_map
 
 
 def draw_wind(world_map, start_at, stop_at, direction):
@@ -84,7 +87,7 @@ def draw_wind(world_map, start_at, stop_at, direction):
                 elevation = world_map[x, y]['elevation']
                 moisture = config_file.getfloat('Climate', 'moisture_drop')
                 precipitation = moisture_array[x, y2] * (elevation - moisture)
-                moisture_array[x, y2] -= precipitation
+                moisture_array[x, y2] = max(moisture_array[x, y2] - precipitation, 0.0)
                 world_map[x, y]['precipitation'] = precipitation
         distance = abs(start_at - stop_at)
         current = abs(y - start_at)

@@ -7,6 +7,7 @@ import numpy as np
 import climate
 from config import get_config
 import dsprocess
+import saving
 import worldmaps
 import views
 
@@ -23,6 +24,7 @@ def main():
     world_map = worldmaps.world_map(size)
     world_map = dsprocess.process(world_map)
     world_map = climate.process(world_map)
+    saving.SaveHandler(world_map, 'test').world_to_csv()
 
     #climate.build_climate(world_map)
     #scaling.scale(world_map, ['precipitation'])

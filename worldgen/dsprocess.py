@@ -2,8 +2,7 @@ import random
 
 import numpy as np
 
-from config import get_config
-import saving
+from config import config
 import scaling
 import worldmaps
 
@@ -22,20 +21,20 @@ def process(world_map):
     """
 
     #TODO Should separate this and the algorithm functions to provide portability.
+    # Should be a height map module and a world_map factory module.
 
     print "Building Geology..."
     smoothness = world_map['smoothness']
     print "-Processing smoothness"
-    ds_process(smoothness)
+    ds_height_map(smoothness)
     scaling.scale(smoothness)
     seed_corners(world_map)
     sew_seams(world_map)
     for key in worldmaps.ds_generated:
         print "-Processing %s" % key
         layer = world_map[key]
-        ds_process(layer, smoothing_layer=world_map['smoothness'])
+        ds_height_map(layer, smoothing_layer=world_map['smoothness'])
         scaling.scale(layer)
-    saving.SaveHandler(world_map, 'test').world_to_csv()
     return world_map
 
 
@@ -93,10 +92,7 @@ def stack_value(stack, values=None, iteration=1, smoothing=1.0):
                                             ('volcanism', 'float16'),
                                             ('solubility', 'float16'),
                                             ('minerals', 'float16')])
-    else:
-        #TODO This does not work. We need a workaround to average the values.
-        values = float(sum(values)) / float(len(values))
-    variance = get_config().getfloat('Parameters', 'variance') * smoothing
+    variance = config.getfloat('Parameters', 'variance') * smoothing
 
     for key in worldmaps.ds_generated:
         noise = random.uniform(-1.0, 1.0) * variance / float(iteration)
@@ -104,7 +100,7 @@ def stack_value(stack, values=None, iteration=1, smoothing=1.0):
     return stack
 
 
-def ds_process(layer, iteration=1, smoothing_layer=None):
+def ds_height_map(layer, iteration=1, smoothing_layer=None):
     """
     Assign a randomized height map to layer, with values 0.0-1.0.
 
@@ -130,10 +126,10 @@ def ds_process(layer, iteration=1, smoothing_layer=None):
     #Recursion on each quadrant.
     if smoothing_layer is None:
         if mid_x > 1 or mid_y > 1:
-            layer[:mid_x + 1, :mid_y + 1] = ds_process(layer[:mid_x + 1, :mid_y + 1], next_iteration)
-            layer[mid_x:, :mid_y + 1] = ds_process(layer[mid_x:, :mid_y + 1], next_iteration)
-            layer[:mid_x + 1, mid_y:] = ds_process(layer[:mid_x + 1, mid_y:], next_iteration)
-            layer[mid_x:, mid_y:] = ds_process(layer[mid_x:, mid_y:], next_iteration)
+            layer[:mid_x + 1, :mid_y + 1] = ds_height_map(layer[:mid_x + 1, :mid_y + 1], next_iteration)
+            layer[mid_x:, :mid_y + 1] = ds_height_map(layer[mid_x:, :mid_y + 1], next_iteration)
+            layer[:mid_x + 1, mid_y:] = ds_height_map(layer[:mid_x + 1, mid_y:], next_iteration)
+            layer[mid_x:, mid_y:] = ds_height_map(layer[mid_x:, mid_y:], next_iteration)
     else:
         if mid_x > 1 or mid_y > 1:
             smoothing_sw = smoothing_layer[:mid_x + 1, :mid_y + 1]
@@ -141,10 +137,10 @@ def ds_process(layer, iteration=1, smoothing_layer=None):
             smoothing_se = smoothing_layer[:mid_x + 1, mid_y:]
             smoothing_ne = smoothing_layer[mid_x:, mid_y:]
 
-            layer[:mid_x + 1, :mid_y + 1] = ds_process(layer[:mid_x + 1, :mid_y + 1], next_iteration, smoothing_sw)
-            layer[mid_x:, :mid_y + 1] = ds_process(layer[mid_x:, :mid_y + 1], next_iteration, smoothing_nw)
-            layer[:mid_x + 1, mid_y:] = ds_process(layer[:mid_x + 1, mid_y:], next_iteration, smoothing_se)
-            layer[mid_x:, mid_y:] = ds_process(layer[mid_x:, mid_y:], next_iteration, smoothing_ne)
+            layer[:mid_x + 1, :mid_y + 1] = ds_height_map(layer[:mid_x + 1, :mid_y + 1], next_iteration, smoothing_sw)
+            layer[mid_x:, :mid_y + 1] = ds_height_map(layer[mid_x:, :mid_y + 1], next_iteration, smoothing_nw)
+            layer[:mid_x + 1, mid_y:] = ds_height_map(layer[:mid_x + 1, mid_y:], next_iteration, smoothing_se)
+            layer[mid_x:, mid_y:] = ds_height_map(layer[mid_x:, mid_y:], next_iteration, smoothing_ne)
 
     return layer
 
@@ -224,6 +220,6 @@ def _get_value(value=1.0, iteration=1, smoothing=1.0):
     @rtype : float
     """
 
-    variance = get_config().getfloat('Parameters', 'variance') * smoothing
+    variance = config.getfloat('Parameters', 'variance') * smoothing
     noise = random.uniform(-1.0, 1.0) * variance / float(iteration)
     return value + noise
