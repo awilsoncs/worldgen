@@ -1,8 +1,8 @@
 import worldgen.scaling as scaling
 import worldgen.world_maps as world_maps
+from diamondsquare.diamond_square import diamond_square
+from diamondsquare.diamond_square import seed_corners
 from worldgen.config import get_config
-from worldgen.diamond_square import diamond_square
-from worldgen.diamond_square import seed_corners
 
 
 def process(world_map):

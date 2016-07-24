@@ -1,16 +1,15 @@
+import argparse
 import random
+import sys
 
-SOUTH_WEST = [0, 0]
-NORTH_WEST = [0, -1]
-SOUTH_EAST = [-1, 0]
-NORTH_EAST = [-1, -1]
+import numpy
 
 
 def setup(seed):
     random.seed(seed)
 
 
-def diamond_square(array, iteration=1, smoothing_array=None, variance=1.0, seed=None):
+def diamond_square(array, iteration=1, smoothing_array=None, variance=1.0):
     """
     Assign a randomized height map to an array, with values 0.0-1.0.
 
@@ -18,22 +17,20 @@ def diamond_square(array, iteration=1, smoothing_array=None, variance=1.0, seed=
     @type iteration: int
     @type smoothing_array: ndarray
     @type variance: float
-    @type seed: int
     @rtype : ndarray
 
     @param array:
     @param iteration:
     @param smoothing_array:
     @param variance:
-    @param seed:
     @return:
     """
 
     mid_x = midpoint(array.shape[0])
     mid_y = midpoint(array.shape[1])
 
-    _square(array, iteration, smoothing_array, variance=variance)
-    _diamond(array, iteration, smoothing_array, variance=variance)
+    square(array, iteration, smoothing_array, variance=variance)
+    diamond(array, iteration, smoothing_array, variance=variance)
 
     next_iteration = iteration + 1
 
@@ -62,15 +59,13 @@ def diamond_square(array, iteration=1, smoothing_array=None, variance=1.0, seed=
 def seed_corners(array):
     """Set values to the corners of the array."""
 
-    print("-Seeding corners...")
-
     # Only get the western corners, we're going to seed the eastern ones from these.
     for i in [0, -1]:
         for j in [0, -1]:
             array[i, j] = get_height_value()
 
 
-def _diamond(layer, iteration, smoothing_layer=None, variance=1.0):
+def diamond(layer, iteration, smoothing_layer=None, variance=1.0):
     """Perform the Diamond step of the Diamond-Square algorithm on layer."""
 
     mid_x = midpoint(layer.shape[0])
@@ -93,7 +88,7 @@ def _diamond(layer, iteration, smoothing_layer=None, variance=1.0):
         layer[mid_x, mid_y] = value
 
 
-def _square(layer, iteration, smoothing_layer=None, variance=1.0):
+def square(layer, iteration, smoothing_layer=None, variance=1.0):
     """Perform the Square step of the Diamond-Square algorithm on layer."""
 
     mid_x = midpoint(layer.shape[0])
@@ -135,10 +130,7 @@ def midpoint(length):
     return int(length * 0.5)
 
 
-def get_height_value(values=None,
-                     iteration=1,
-                     smoothing=1.0,
-                     variance=1.0):
+def get_height_value(values=None, iteration=1, smoothing=1.0, variance=1.0):
     """Average values, then adjust it based on random noise.
     @type values: list
     @param iteration:
@@ -152,3 +144,33 @@ def get_height_value(values=None,
         return noise
     value = float(sum(values)) / float(len(values))
     return value + noise
+
+
+def array_to_csv(array, path):
+    """Save a single layer as a CSV file."""
+    file_path = path + ".csv"
+    try:
+        numpy.savetxt(file_path, array, delimiter=",", fmt="%s")
+    except PermissionError:
+        print("Error saving file: {0}".format(file_path))
+        print("Check to make sure you do not have the file open in another program.")
+
+
+def plot(array):
+    pass
+
+
+def main():
+    parser = argparse.ArgumentParser(description="Create 2D noise arrays.")
+    parser.add_argument('-d', '--destination', type=str, default='default.csv', help='output destination')
+    parser.add_argument('-p', '--plot', action='store_true', help='render a plot of the array')
+    parser.add_argument('-r', '--random', type=int, default=None, help='random seed')
+    parser.add_argument('-s', '--smoothing', action='store_true', help='use a special smoothing array')
+    parser.add_argument('-v', '--variance', type=float, default=1.0, help='variance of the array')
+    parser.add_argument('height', type=int, help='height of the array')
+    parser.add_argument('width', type=int, help='width of the array')
+    args = parser.parse_args()
+
+
+if __name__ == '__main__':
+    sys.exit(main())
