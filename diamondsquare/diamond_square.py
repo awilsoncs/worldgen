@@ -9,7 +9,7 @@ def setup(seed):
     random.seed(seed)
 
 
-def diamond_square(array, iteration=1, smoothing_array=None, variance=1.0):
+def diamond_square(array, size, iteration=1, smoothing_array=None, variance=1.0):
     """
     Assign a randomized height map to an array, with values 0.0-1.0.
 
@@ -26,26 +26,16 @@ def diamond_square(array, iteration=1, smoothing_array=None, variance=1.0):
     @return:
     """
 
-    mid_x = midpoint(array.shape[0])
-    mid_y = midpoint(array.shape[1])
-
-    square(array, iteration, smoothing_array, variance=variance)
-    diamond(array, iteration, smoothing_array, variance=variance)
-
-    next_iteration = iteration + 1
-
-    if mid_x > 1 or mid_y > 1:
-        smoothing_sw = smoothing_array[:mid_x + 1, :mid_y + 1]
-        smoothing_nw = smoothing_array[mid_x:, :mid_y + 1]
-        smoothing_se = smoothing_array[:mid_x + 1, mid_y:]
-        smoothing_ne = smoothing_array[mid_x:, mid_y:]
-
-        array[:mid_x + 1, :mid_y + 1] = diamond_square(array[:mid_x + 1, :mid_y + 1], next_iteration, smoothing_sw)
-        array[mid_x:, :mid_y + 1] = diamond_square(array[mid_x:, :mid_y + 1], next_iteration, smoothing_nw)
-        array[:mid_x + 1, mid_y:] = diamond_square(array[:mid_x + 1, mid_y:], next_iteration, smoothing_se)
-        array[mid_x:, mid_y:] = diamond_square(array[mid_x:, mid_y:], next_iteration, smoothing_ne)
-
-    return array
+    for n in range(size, 0, -1):
+        print(n)
+        working_block_size = 2 ** n + 1
+        for x1 in range(0, 2 ** size, 2 ** n):
+            for y1 in range(0, 2 ** size, 2 ** n):
+                x2 = x1 + working_block_size - 1
+                y2 = y1 + working_block_size - 1
+                print('x1: {0} x2: {1} y1: {2} y2: {3}'.format(x1, x2, y1, y2))
+                diamond(array, x1, y1, x2, y2, iteration=iteration, smoothing_array=smoothing_array, variance=variance)
+                square(array, x1, y1, x2, y2, iteration=iteration, smoothing_array=smoothing_array, variance=variance)
 
 
 def seed_corners(array):
@@ -57,55 +47,51 @@ def seed_corners(array):
             array[i, j] = get_height_value()
 
 
-def diamond(array, iteration, smoothing_layer=None, variance=1.0):
+def diamond(array, x1, y1, x2, y2, iteration=1, smoothing_array=None, variance=1.0):
     """Perform the Diamond step of the Diamond-Square algorithm on layer."""
 
-    mid_x = midpoint(array.shape[0])
-    mid_y = midpoint(array.shape[1])
+    mid_x = int((x1 + x2) * 0.5)
+    mid_y = int((y1 + y2) * 0.5)
 
-    if array[mid_x, mid_y] == 0:
-        corner_a = array[0, 0]
-        corner_b = array[0, -1]
-        corner_c = array[-1, 0]
-        corner_d = array[-1, -1]
-        values = [corner_a, corner_b, corner_c, corner_d]
+    corner_a = array[x1, y1]
+    corner_b = array[x1, y2]
+    corner_c = array[x2, y1]
+    corner_d = array[x2, y2]
+    values = [corner_a, corner_b, corner_c, corner_d]
 
-        smoothness = smoothing_layer[mid_x, mid_y]
-        value = get_height_value(values=values, iteration=iteration, smoothing=smoothness, variance=variance)
-        array[mid_x, mid_y] = value
+    smoothness = smoothing_array[mid_x, mid_y]
+    value = get_height_value(values=values, iteration=iteration, smoothing=smoothness, variance=variance)
+    array[mid_x, mid_y] = value
+
+    print('x1: {0} x2: {1} y1: {2} y2: {3} value: {4}'.format(x1, x2, y1, y2, value))
 
 
-def square(array, iteration, smoothing_array=None, variance=1.0):
+def square(array, x1, y1, x2, y2, iteration=1, smoothing_array=None, variance=1.0):
     """Perform the Square step of the Diamond-Square algorithm on layer."""
 
-    mid_x = midpoint(array.shape[0])
-    mid_y = midpoint(array.shape[1])
-    array_ne = array[0, -1]
-    array_se = array[-1, -1]
-    array_nw = array[0, 0]
-    array_sw = array[-1, 0]
+    mid_x = int((x1 + x2) * 0.5)
+    mid_y = int((y1 + y2) * 0.5)
+    array_ne = array[x1, y2]
+    array_se = array[x2, y2]
+    array_nw = array[x1, y1]
+    array_sw = array[x2, y1]
 
-    smoothness_e = smoothing_array[mid_x, -1]
-    array[mid_x, -1] = get_height_value([array_se, array_ne], iteration, smoothness_e, variance=variance)
+    if y1 is 0:
+        smoothness_w = smoothing_array[mid_x, y1]
+        array[mid_x, y1] = get_height_value([array_sw, array_nw], iteration=iteration, smoothing=smoothness_w,
+                                            variance=variance)
+    if x1 is 0:
+        smoothness_n = smoothing_array[x1, mid_y]
+        array[x1, mid_y] = get_height_value([array_nw, array_ne], iteration=iteration, smoothing=smoothness_n,
+                                            variance=variance)
 
-    smoothness_s = smoothing_array[-1, mid_y]
-    array[-1, mid_y] = get_height_value([array_se, array_sw], iteration, smoothness_s, variance=variance)
+    smoothness_e = smoothing_array[mid_x, y2]
+    array[mid_x, y2] = get_height_value([array_se, array_ne], iteration=iteration, smoothing=smoothness_e,
+                                        variance=variance)
 
-    smoothness_n = smoothing_array[0, mid_y]
-    array[0, mid_y] = get_height_value([array_nw, array_ne], iteration, smoothness_n, variance=variance)
-
-    smoothness_w = smoothing_array[mid_x, 0]
-    array[mid_x, 0] = get_height_value([array_sw, array_nw], iteration, smoothness_w, variance=variance)
-
-
-def midpoint(length):
-    """Return an integer midpoint of a given length.
-    @rtype : int
-    @param length: integer
-    @return: integer
-    """
-
-    return int(length * 0.5)
+    smoothness_s = smoothing_array[x2, mid_y]
+    array[x2, mid_y] = get_height_value([array_se, array_sw], iteration=iteration, smoothing=smoothness_s,
+                                        variance=variance)
 
 
 def get_height_value(values=None, iteration=1, smoothing=1.0, variance=1.0):
@@ -153,35 +139,37 @@ def plot(array, x, y):
 
     except Exception as ex:
         print("Could not plot: {0}".format(ex))
-        print("You may need to install seaborn.")
+        print("You may need to install matplotlib. (>> pip install matplotlib)")
 
 
 def main():
     parser = argparse.ArgumentParser(description="Create 2D noise arrays.")
     parser.add_argument('-d', '--destination', type=str, default='default.csv', help='output destination')
+    parser.add_argument('-e', '--enlarge', type=int, help='enlarge the map by linear interpolation')
     parser.add_argument('-n', '--normalize', action='store_true', help='normalize to 0.5 mean and 1 range')
     parser.add_argument('-o', '--output', action='store_true', help='print the result to stdout')
     parser.add_argument('-p', '--plot', action='store_true', help='render a plot of the array')
     parser.add_argument('-r', '--random', type=int, default=None, help='random seed')
     parser.add_argument('-s', '--smoothing', action='store_true', help='use a special smoothing array')
     parser.add_argument('-v', '--variance', type=float, default=1.0, help='variance of the array')
-    parser.add_argument('height', type=int, help='height of the array')
-    parser.add_argument('width', type=int, help='width of the array')
+    parser.add_argument('size', type=int, help='power of two')
+    # parser.add_argument('height', type=int, help='height of the array')
+    # parser.add_argument('width', type=int, help='width of the array')
     args = parser.parse_args()
 
     if args.random:
         setup(args.random)
 
-    size = (args.height, args.width)
+    size = (2 ** args.size + 1, 2 ** args.size + 1)
 
     smoothing = numpy.ones(size)
     array = numpy.zeros(size)
     if args.smoothing:
         smoothing = numpy.zeros(size)
         seed_corners(smoothing)
-        diamond_square(smoothing, variance=args.variance)
+        diamond_square(smoothing, args.size, variance=args.variance)
     seed_corners(array)
-    diamond_square(array, smoothing_array=smoothing, variance=args.variance)
+    diamond_square(array, args.size, smoothing_array=smoothing, variance=args.variance)
 
     if args.normalize:
         normalize(array)
@@ -190,7 +178,7 @@ def main():
         print(array)
 
     if args.plot:
-        plot(array, size[1], size[0])
+        plot(array, size[0], size[1])
 
 
 if __name__ == '__main__':
