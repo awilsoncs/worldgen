@@ -2,20 +2,20 @@ import math
 
 import numpy as np
 
-from config import get_config
+from worldgen.config import get_config
 
 
-def process(world_map):
-    """
-
-    @rtype : recarray
-    """
-    print "Building Climates..."
-    elevation = world_map['elevation']
-    lowest_trench = np.unravel_index(elevation.argmin(), elevation.shape)
-    world_map = flood_fill(lowest_trench[0], lowest_trench[1], world_map, 0.6)
-    trade_winds(world_map)
-    return world_map
+# def process(world_map):
+#     """
+#
+#     @rtype : recarray
+#     """
+#     print("Building Climates...")
+#     elevation = world_map['elevation']
+#     lowest_trench = np.unravel_index(elevation.argmin(), elevation.shape)
+#     world_map = flood_fill(lowest_trench[0], lowest_trench[1], world_map, 0.6)
+#     trade_winds(world_map)
+#     return world_map
 
 
 def trade_winds(world_map):
@@ -41,17 +41,17 @@ def trade_winds(world_map):
     draw_wind(world_map, start_at, stop_at, -2)
 
 
-def set_oceans(world_map, depth):
-    print "Filling oceans..."
-    for (_, _), location in np.ndenumerate(world_map):
-        if location['elevation'] <= depth:
-            location['water depth'] = 1.0
-        else:
-            location['water depth'] = 0.0
+# def set_oceans(world_map, depth):
+#     print("Filling oceans...")
+#     for (_, _), location in np.ndenumerate(world_map):
+#         if location['elevation'] <= depth:
+#             location['water depth'] = 1.0
+#         else:
+#             location['water depth'] = 0.0
 
 
 def flood_fill(x, y, world_map, depth):
-    print "-Filling oceans"
+    print("-Filling oceans")
     queue = [(x, y)]
     while len(queue) > 0:
         node = queue.pop()
@@ -91,6 +91,6 @@ def draw_wind(world_map, start_at, stop_at, direction):
                 world_map[x, y]['precipitation'] = precipitation
         distance = abs(start_at - stop_at)
         current = abs(y - start_at)
-        #As we get further into the trade wind's "territory", they push further.
+        # As we get further into the trade wind's "territory", they push further.
         shift = int(math.sin(current / float(distance)) * winds * direction)
         moisture_array = np.roll(moisture_array, shift*5)

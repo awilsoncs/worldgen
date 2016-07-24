@@ -1,11 +1,10 @@
-__author__ = 'Aaron'
-
-import csv
 import errno
 import os
 
+import numpy
 
-class SaveHandler():
+
+class SaveHandler:
 
     def __init__(self, world_map, path):
         self.world_map = world_map
@@ -24,11 +23,12 @@ class SaveHandler():
     def layer_to_csv(self, layer_name):
         """Save a single layer as a CSV file."""
         file_path = 'worlds' + "/" + self.path + "/" + layer_name + ".csv"
-        with open(file_path, "wb") as csvfile:
-            layer_writer = csv.writer(csvfile)
+        try:
             layer = self.world_map[layer_name]
-            for y in range(layer.shape[1]):
-                layer_writer.writerow(layer[:, y])
+            numpy.savetxt(file_path, layer, delimiter=",", fmt="%s")
+        except PermissionError:
+            print("Error saving file: {0}".format(file_path))
+            print("Check to make sure you do not have the file open in another program.")
 
     def world_to_csv(self):
         """Save the entire world map into a directory."""

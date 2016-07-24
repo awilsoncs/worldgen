@@ -1,9 +1,6 @@
 import numpy as np
 
-ds_generated = ['elevation',
-                'volcanism',
-                'solubility',
-                'minerals']
+ds_generated = ['elevation']
 
 
 def world_map(size):
