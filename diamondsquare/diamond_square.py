@@ -9,31 +9,70 @@ def setup(seed):
     random.seed(seed)
 
 
-def diamond_square(array, size, iteration=1, smoothing_array=None, variance=1.0):
+def get_height_map(height=250, width=250, scale=8, smoothing=False, variance=1.0, seed=None, normalization=False):
+    """Generate a height map and return it.
+
+    :param height: height of the height map
+    :param width: width of the height map
+    :param scale: Exponential detail level of the height map.
+    :param smoothing: If true, produce a partially smoothed map with cloudy portions.
+    :param variance: Ruggedness of the map
+    :param seed: Random seed
+    :param normalization: If true, normalize the map to 0.0-1.0
+    :return:
+    """
+    if random:
+        setup(seed)
+
+    size = (2 ** scale + 1, 2 ** scale + 1)
+    array = numpy.zeros(size)
+    smoothing_array = numpy.ones(size)
+    if smoothing:
+        smoothing_array = numpy.zeros(size)
+        seed_corners(smoothing_array)
+        diamond_square(smoothing_array, scale, variance=variance)
+
+    seed_corners(array)
+    diamond_square(array, scale, smoothing_array=smoothing_array, variance=variance)
+
+    if size[0] < height or size[1] < width:
+        print("Height or width scaled too small. Must be at least {0}.".format(size))
+    else:
+        array = array[0:height + 1, 0:width + 1]
+
+    if normalization:
+        normalize(array)
+
+    return array
+
+
+def diamond_square(array, size, smoothing_array=None, variance=1.0):
     """
     Assign a randomized height map to an array, with values 0.0-1.0.
 
     @type array: ndarray
-    @type iteration: int
+    @type size: int
     @type smoothing_array: ndarray
     @type variance: float
     @rtype : ndarray
 
     @param array:
-    @param iteration:
     @param smoothing_array:
     @param variance:
     @return:
     """
 
+    if smoothing_array is None:
+        array_size = (2 ** size + 1, 2 ** size + 1)
+        smoothing_array = numpy.ones(array_size)
+
     for n in range(size, 0, -1):
-        print(n)
         working_block_size = 2 ** n + 1
         for x1 in range(0, 2 ** size, 2 ** n):
             for y1 in range(0, 2 ** size, 2 ** n):
                 x2 = x1 + working_block_size - 1
                 y2 = y1 + working_block_size - 1
-                print('x1: {0} x2: {1} y1: {2} y2: {3}'.format(x1, x2, y1, y2))
+                iteration = size - n + 1
                 diamond(array, x1, y1, x2, y2, iteration=iteration, smoothing_array=smoothing_array, variance=variance)
                 square(array, x1, y1, x2, y2, iteration=iteration, smoothing_array=smoothing_array, variance=variance)
 
@@ -63,7 +102,7 @@ def diamond(array, x1, y1, x2, y2, iteration=1, smoothing_array=None, variance=1
     value = get_height_value(values=values, iteration=iteration, smoothing=smoothness, variance=variance)
     array[mid_x, mid_y] = value
 
-    print('x1: {0} x2: {1} y1: {2} y2: {3} value: {4}'.format(x1, x2, y1, y2, value))
+    # print('x1: {0} x2: {1} y1: {2} y2: {3} value: {4}'.format(x1, x2, y1, y2, value))
 
 
 def square(array, x1, y1, x2, y2, iteration=1, smoothing_array=None, variance=1.0):
@@ -131,8 +170,12 @@ def array_to_csv(array, path):
 def plot(array, x, y):
     try:
         import matplotlib.pyplot as plt
+
         fig, ax = plt.subplots()
-        heatmap = ax.pcolor(array, cmap=plt.cm.Blues)
+        heatmap = ax.pcolor(array, cmap=plt.cm.BrBG)
+
+        plt.xlim([0, x])
+        plt.ylim([0, y])
         ax.invert_yaxis()
         ax.xaxis.tick_top()
         plt.show()
@@ -153,32 +196,23 @@ def main():
     parser.add_argument('-s', '--smoothing', action='store_true', help='use a special smoothing array')
     parser.add_argument('-v', '--variance', type=float, default=1.0, help='variance of the array')
     parser.add_argument('size', type=int, help='power of two')
-    # parser.add_argument('height', type=int, help='height of the array')
-    # parser.add_argument('width', type=int, help='width of the array')
+    parser.add_argument('height', type=int, help='height of the array')
+    parser.add_argument('width', type=int, help='width of the array')
     args = parser.parse_args()
 
-    if args.random:
-        setup(args.random)
-
-    size = (2 ** args.size + 1, 2 ** args.size + 1)
-
-    smoothing = numpy.ones(size)
-    array = numpy.zeros(size)
-    if args.smoothing:
-        smoothing = numpy.zeros(size)
-        seed_corners(smoothing)
-        diamond_square(smoothing, args.size, variance=args.variance)
-    seed_corners(array)
-    diamond_square(array, args.size, smoothing_array=smoothing, variance=args.variance)
-
-    if args.normalize:
-        normalize(array)
+    array = get_height_map(height=args.height,
+                           width=args.width,
+                           scale=args.size,
+                           smoothing=args.smoothing,
+                           variance=args.variance,
+                           seed=args.random,
+                           normalization=args.normalize)
 
     if args.output:
         print(array)
 
     if args.plot:
-        plot(array, size[0], size[1])
+        plot(array, args.height, args.width)
 
 
 if __name__ == '__main__':
