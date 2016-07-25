@@ -1,7 +1,8 @@
 import sys
 import time
 
-import worldgen.process as ds
+import worldgen.climate as climate
+import worldgen.geology as geology
 import worldgen.saving as saving
 import worldgen.world_maps as world_maps
 from worldgen.config import get_config
@@ -16,12 +17,11 @@ def main():
     y = config_file.getint('Parameters', 'size_y')
     size = (x, y)
     world_map = world_maps.world_map(size)
-    world_map = ds.process(world_map)
-    # world_map = climate.process(world_map)
+    world_map = geology.process(world_map)
+    world_map = climate.process(world_map)
+    print("Saving")
     saving.SaveHandler(world_map, 'test').world_to_csv()
-
-    # climate.build_climate(world_map)
-    # scaling.scale(world_map, ['precipitation'])
+    saving.SaveHandler(world_map, 'test').world_to_png()
 
     print("Ran in {0} seconds.".format(time.time() - t))
 

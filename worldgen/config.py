@@ -11,9 +11,10 @@ def generate_default_file(path):
     with open(path, 'w') as config_file:
         config_parser = configparser.ConfigParser()
         config_parser.add_section('Parameters')
-        config_parser.set('Parameters', 'size_x', '257')
-        config_parser.set('Parameters', 'size_y', '129')
-        config_parser.set('Parameters', 'depth', '0.6')
+        config_parser.set('Parameters', 'size_x', '250')
+        config_parser.set('Parameters', 'size_y', '250')
+        config_parser.set('Parameters', 'scale', '8')
+        config_parser.set('Parameters', 'depth', '0.5')
         config_parser.set('Parameters', 'variance', '5.0')
         config_parser.add_section('Climate')
         config_parser.set('Climate', 'moisture_pickup', '1.0')

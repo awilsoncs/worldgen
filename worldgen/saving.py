@@ -2,6 +2,7 @@ import errno
 import os
 
 import numpy
+import png
 
 
 class SaveHandler:
@@ -35,9 +36,27 @@ class SaveHandler:
         for key in self.world_map.dtype.names:
             self.layer_to_csv(key)
 
-    def layer_to_bitmap(self):
-        """Export a height map as a bitmap"""
-        raise NotImplementedError
+    def world_to_png(self):
+        for key in self.world_map.dtype.names:
+            self.layer_to_png(key)
+
+    def layer_to_png(self, layer_name):
+        """Export a height map as a png"""
+        file_path = 'worlds' + "/" + self.path + "/" + layer_name + ".png"
+        print('Saving ', file_path)
+        try:
+            layer = self.world_map[layer_name] * 65535
+            layer = numpy.transpose(layer)
+            size = layer.shape
+
+            print(layer)
+            # code that assigns the pixels
+            with open(file_path, "wb") as out_file:
+                png_writer = png.Writer(size[0], size[1], greyscale=True, bitdepth=16)
+                png_writer.write(out_file, layer)
+        except PermissionError:
+            print("Error saving file: {0}".format(file_path))
+            print("Check to make sure you do not have the file open in another program.")
 
 
 def _set_up_dir(path):

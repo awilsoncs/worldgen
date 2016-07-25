@@ -9,13 +9,15 @@ def setup(seed):
     random.seed(seed)
 
 
-def get_height_map(height=250, width=250, scale=8, smoothing=False, variance=1.0, seed=None, normalization=False):
+def get_height_map(height=250, width=250, scale=8, smoothing=False,
+                   smooth_map=None, variance=1.0, seed=None, normalization=True):
     """Generate a height map and return it.
 
     :param height: height of the height map
     :param width: width of the height map
     :param scale: Exponential detail level of the height map.
     :param smoothing: If true, produce a partially smoothed map with cloudy portions.
+    :param smooth_map:
     :param variance: Ruggedness of the map
     :param seed: Random seed
     :param normalization: If true, normalize the map to 0.0-1.0
@@ -31,14 +33,15 @@ def get_height_map(height=250, width=250, scale=8, smoothing=False, variance=1.0
         smoothing_array = numpy.zeros(size)
         seed_corners(smoothing_array)
         diamond_square(smoothing_array, scale, variance=variance)
-
+    if smooth_map is not None:
+        smoothing_array = smooth_map
     seed_corners(array)
     diamond_square(array, scale, smoothing_array=smoothing_array, variance=variance)
 
     if size[0] < height or size[1] < width:
         print("Height or width scaled too small. Must be at least {0}.".format(size))
     else:
-        array = array[0:height + 1, 0:width + 1]
+        array = array[0:height, 0:width]
 
     if normalization:
         normalize(array)
@@ -172,7 +175,7 @@ def plot(array, x, y):
         import matplotlib.pyplot as plt
 
         fig, ax = plt.subplots()
-        heatmap = ax.pcolor(array, cmap=plt.cm.BrBG)
+        ax.pcolor(array, cmap=plt.cm.inferno)
 
         plt.xlim([0, x])
         plt.ylim([0, y])
