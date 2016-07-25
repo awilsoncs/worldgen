@@ -9,5 +9,5 @@ setup(
     author='Aaron',
     author_email='',
     description='',
-    requires=['numpy']
+    requires=['numpy', 'configparser']
 )
