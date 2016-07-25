@@ -2,7 +2,7 @@ from distutils.core import setup
 
 setup(
     name='worldgen',
-    version='1.0a',
+    version='0.2a',
     packages=['tests', 'worldgen', 'diamondsquare'],
     url='',
     license='',
