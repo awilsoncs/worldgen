@@ -23,7 +23,7 @@ def get_height_map(height=250, width=250, scale=8, smoothing=False,
     :param normalization: If true, normalize the map to 0.0-1.0
     :return:
     """
-    if random:
+    if seed:
         setup(seed)
 
     size = (2 ** scale + 1, 2 ** scale + 1)
@@ -195,7 +195,7 @@ def main():
     parser.add_argument('-n', '--normalize', action='store_true', help='normalize to 0.5 mean and 1 range')
     parser.add_argument('-o', '--output', action='store_true', help='print the result to stdout')
     parser.add_argument('-p', '--plot', action='store_true', help='render a plot of the array')
-    parser.add_argument('-r', '--random', type=int, default=None, help='random seed')
+    parser.add_argument('-r', '--seed', type=int, default=None, help='random seed')
     parser.add_argument('-s', '--smoothing', action='store_true', help='use a special smoothing array')
     parser.add_argument('-v', '--variance', type=float, default=1.0, help='variance of the array')
     parser.add_argument('size', type=int, help='power of two')
@@ -208,7 +208,7 @@ def main():
                            scale=args.size,
                            smoothing=args.smoothing,
                            variance=args.variance,
-                           seed=args.random,
+                           seed=args.seed,
                            normalization=args.normalize)
 
     if args.output:

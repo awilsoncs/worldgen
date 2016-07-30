@@ -24,6 +24,7 @@ class SaveHandler:
     def layer_to_csv(self, layer_name):
         """Save a single layer as a CSV file."""
         file_path = 'worlds' + "/" + self.path + "/" + layer_name + ".csv"
+        print('- Saving ', file_path)
         try:
             layer = self.world_map[layer_name]
             layer = numpy.transpose(numpy.fliplr(layer))  # kill me
@@ -44,7 +45,7 @@ class SaveHandler:
     def layer_to_png(self, layer_name):
         """Export a height map as a png"""
         file_path = 'worlds' + "/" + self.path + "/" + layer_name + ".png"
-        print('Saving ', file_path)
+        print('- Saving ', file_path)
         try:
             layer = self.world_map[layer_name] * 65535
             layer = numpy.transpose(numpy.fliplr(layer))  # kill me
