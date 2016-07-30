@@ -29,7 +29,4 @@ Each geological stage is built using the smoothed diamond-square method found in
 
 ### Climate
 #### Temperature
-
-Temperature is given by [;$e^{-5*x^{2}}$;]
-
 #### Precipitation
