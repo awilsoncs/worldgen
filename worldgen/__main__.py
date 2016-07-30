@@ -20,9 +20,9 @@ def main():
     print("Random Seed: ", t)
     world_map = geology.process(world_map, seed=t)
     world_map = climate.process(world_map)
-    print("Saving")
-    saving.SaveHandler(world_map, 'test').world_to_csv()
-    saving.SaveHandler(world_map, 'test').world_to_png()
+    print("Saving: ", t)
+    saving.SaveHandler(world_map, str(t)).world_to_csv()
+    saving.SaveHandler(world_map, str(t)).world_to_png()
     print("Map Hash: ", hash(str(world_map)))
 
     print("Ran in {0} seconds.".format(time.time() - t))
@@ -33,6 +33,7 @@ def add_args():
     parser.add_argument("--seed", int, help="The random seed to be used")
     parser.add_argument('-v', '--verbose', action='store_true', help="Print more output during generation")
     return parser
+
 
 if __name__ == '__main__':
     sys.exit(main())

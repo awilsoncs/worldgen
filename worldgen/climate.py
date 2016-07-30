@@ -7,7 +7,7 @@ from worldgen.scaling import normalize
 
 
 def process(world_map):
-    """
+    """Build climate features.
 
     @rtype : recarray
     """
@@ -21,7 +21,21 @@ def process(world_map):
     return world_map
 
 
+# def smooth_coastlines(world_map):
+#     ocean_map = world_map['water depth']
+#     elevation_map = world_map['elevation']
+#     padded_ocean_map =
+#     for (x, y), z in np.ndenumerate(elevation_map):
+#         ocean_neighbors =
+
+
 def set_oceans(world_map, depth):
+    """Set the ocean map to 0.0 if ocean is present, 1.0 otherwise.
+
+    :param world_map:
+    :param depth:
+    :return:
+    """
     print("- Processing oceans")
     for (x, y), z in np.ndenumerate(world_map):
         if world_map['elevation'][x, y] <= depth:
@@ -31,6 +45,11 @@ def set_oceans(world_map, depth):
 
 
 def set_temperature(world_map):
+    """Set temperature based on elevation and latitude.
+
+    :param world_map:
+    :return:
+    """
     print("- Processing temperature")
     temperature_map = world_map['temperature']
     elevation_map = world_map['elevation']
@@ -46,6 +65,12 @@ def set_temperature(world_map):
 
 
 def get_temperature(elevation, sea_level):
+    """Get a temperature adjustment based on elevation. Temperatures over oceans are 80% of normal, for visual reasons.
+
+    :param elevation:
+    :param sea_level:
+    :return:
+    """
     if elevation <= sea_level:
         return 0.8
     else:
@@ -53,6 +78,11 @@ def get_temperature(elevation, sea_level):
 
 
 def set_precipitation(world_map):
+    """Set precipitation of the world map, based on the latitude ocean / land ratio and temperature.
+
+    :param world_map:
+    :return:
+    """
     print("- Processing precipitation")
     ocean_map = world_map['water depth']
     precipitation_map = world_map['precipitation']

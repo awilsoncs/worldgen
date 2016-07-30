@@ -35,6 +35,5 @@ def process(world_map, seed=None):
                                         smooth_map=smoothing_array,
                                         variance=variance)
 
-    # world_map = climate.process(world_map)
     world_map['elevation'] = scaling.elevation(world_map['elevation'])
     return world_map
