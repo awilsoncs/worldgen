@@ -4,12 +4,14 @@ from diamondsquare.diamond_square import get_height_map
 from worldgen.config import get_config
 
 
-def process(world_map):
+def process(world_map, seed=None):
     """
     Construct the world map.
 
-    @rtype : recarray
     @type world_map: recarray
+    @rtype : recarray
+    :param world_map:
+    :param seed: 
     """
 
     print("Building Geology...")
@@ -22,7 +24,8 @@ def process(world_map):
     smoothing_array = get_height_map(scale=scale,
                                      height=2 ** scale + 1,
                                      width=2 ** scale + 1,
-                                     variance=variance)
+                                     variance=variance,
+                                     seed=seed)
 
     for key in world_maps.geology:
         print('- Processing {0}'.format(key))

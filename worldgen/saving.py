@@ -24,8 +24,10 @@ class SaveHandler:
     def layer_to_csv(self, layer_name):
         """Save a single layer as a CSV file."""
         file_path = 'worlds' + "/" + self.path + "/" + layer_name + ".csv"
+        print('- Saving ', file_path)
         try:
             layer = self.world_map[layer_name]
+            layer = numpy.transpose(numpy.fliplr(layer))  # kill me
             numpy.savetxt(file_path, layer, delimiter=",", fmt="%s")
         except PermissionError:
             print("Error saving file: {0}".format(file_path))
@@ -43,13 +45,12 @@ class SaveHandler:
     def layer_to_png(self, layer_name):
         """Export a height map as a png"""
         file_path = 'worlds' + "/" + self.path + "/" + layer_name + ".png"
-        print('Saving ', file_path)
+        print('- Saving ', file_path)
         try:
             layer = self.world_map[layer_name] * 65535
-            layer = numpy.transpose(layer)
+            layer = numpy.transpose(numpy.fliplr(layer))  # kill me
             size = layer.shape
 
-            print(layer)
             # code that assigns the pixels
             with open(file_path, "wb") as out_file:
                 png_writer = png.Writer(size[0], size[1], greyscale=True, bitdepth=16)

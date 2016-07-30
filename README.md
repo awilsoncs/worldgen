@@ -22,17 +22,14 @@ The config file can be found in the program directory as
 ### Geology
 Each geological stage is built using the smoothed diamond-square method found in diamond_square.py.
 
-#### Elevation
-
-#### Minerals
-
-#### Volcanism
-
-
-#### Solubility
+* Elevation
+* Minerals
+* Volcanism
+* Solubility
 
 ### Climate
-
 #### Temperature
+
+Temperature is given by $e^{-5*x^{2}}$
 
 #### Precipitation
