@@ -18,6 +18,7 @@ def process(world_map):
     set_temperature(world_map)
     set_precipitation(world_map)
     normalize(world_map['precipitation'])
+    normalize(world_map['temperature'])
     return world_map
 
 
@@ -33,12 +34,25 @@ def set_oceans(world_map, depth):
 def set_temperature(world_map):
     print("- Processing temperature")
     temperature_map = world_map['temperature']
+    elevation_map = world_map['elevation']
     size_y = world_map.shape[1]
+    sea_level = float(get_config()['Parameters']['depth'])
 
     for (x, y), z in np.ndenumerate(temperature_map):
         latitude = y / size_y
-        temperature_map[x, y] = math.e ** (-5 * (latitude ** 2))
-    world_map['temperature'] = numpy.fliplr(temperature_map)
+        elevation = elevation_map[x, y]
+
+        value = math.e ** (-5 * (latitude ** 2))
+        temperature_map[x, y] = value * get_temperature(elevation, sea_level)
+        print(value)
+        # world_map['temperature'] = numpy.fliplr(temperature_map)
+
+
+def get_temperature(elevation, sea_level):
+    if elevation <= sea_level:
+        return 1.0
+    else:
+        return (-1.0 / (1.0 - sea_level)) * (elevation - sea_level) + 1.0
 
 
 def set_precipitation(world_map):

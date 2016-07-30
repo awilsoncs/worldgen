@@ -26,6 +26,7 @@ class SaveHandler:
         file_path = 'worlds' + "/" + self.path + "/" + layer_name + ".csv"
         try:
             layer = self.world_map[layer_name]
+            layer = numpy.transpose(numpy.fliplr(layer))  # kill me
             numpy.savetxt(file_path, layer, delimiter=",", fmt="%s")
         except PermissionError:
             print("Error saving file: {0}".format(file_path))
@@ -46,10 +47,9 @@ class SaveHandler:
         print('Saving ', file_path)
         try:
             layer = self.world_map[layer_name] * 65535
-            layer = numpy.transpose(layer)
+            layer = numpy.transpose(numpy.fliplr(layer))  # kill me
             size = layer.shape
 
-            print(layer)
             # code that assigns the pixels
             with open(file_path, "wb") as out_file:
                 png_writer = png.Writer(size[0], size[1], greyscale=True, bitdepth=16)

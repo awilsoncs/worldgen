@@ -19,6 +19,7 @@ def generate_default_file(path):
         config_parser.add_section('Climate')
         config_parser.set('Climate', 'moisture_pickup', '1.0')
         config_parser.set('Climate', 'moisture_drop', '0.5')
+        config_parser.set('Climate', 'average_temperature', '80')
         config_parser.set('Climate', 'winds', '50')
         config_parser.write(config_file)
 
