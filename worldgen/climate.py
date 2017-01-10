@@ -2,19 +2,17 @@ import math
 
 import numpy as np
 
-from worldgen.config import get_config
 from worldgen.scaling import normalize
 
 
-def process(world_map):
+def process(world_map, sea_level):
     """Build climate features.
 
     @rtype : recarray
     """
     print("Building Climate...")
-    depth = float(get_config()['Parameters']['depth'])
-    set_oceans(world_map, depth)
-    set_temperature(world_map)
+    set_oceans(world_map, sea_level)
+    set_temperature(world_map, sea_level)
     set_precipitation(world_map)
     normalize(world_map['precipitation'])
     normalize(world_map['temperature'])
@@ -29,7 +27,7 @@ def process(world_map):
 #         ocean_neighbors =
 
 
-def set_oceans(world_map, depth):
+def set_oceans(world_map, sea_level):
     """Set the ocean map to 0.0 if ocean is present, 1.0 otherwise.
 
     :param world_map:
@@ -38,13 +36,13 @@ def set_oceans(world_map, depth):
     """
     print("- Processing oceans")
     for (x, y), z in np.ndenumerate(world_map):
-        if world_map['elevation'][x, y] <= depth:
+        if world_map['elevation'][x, y] <= sea_level:
             world_map['water depth'][x, y] = 0.0
         else:
             world_map['water depth'][x, y] = 1.0
 
 
-def set_temperature(world_map):
+def set_temperature(world_map, sea_level):
     """Set temperature based on elevation and latitude.
 
     :param world_map:
@@ -54,7 +52,6 @@ def set_temperature(world_map):
     temperature_map = world_map['temperature']
     elevation_map = world_map['elevation']
     size_y = world_map.shape[1]
-    sea_level = float(get_config()['Parameters']['depth'])
 
     for (x, y), z in np.ndenumerate(temperature_map):
         latitude = y / size_y
