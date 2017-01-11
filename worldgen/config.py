@@ -7,7 +7,8 @@ def generate_default_file(path):
     @param path: path to save the config file
     @return: none
     """
-    print("Generating config.ini...")
+    print("Config not found...")
+    print("Generating {0}...".format(path))
     with open(path, 'w') as config_file:
         config_parser = configparser.ConfigParser()
         config_parser.add_section('Parameters')

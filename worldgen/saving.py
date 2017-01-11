@@ -1,3 +1,5 @@
+from __future__ import print_function
+
 import errno
 import os
 
@@ -29,7 +31,7 @@ class SaveHandler:
         :return:
         """
         file_path = 'worlds' + "/" + self.path + "/" + layer_name + ".csv"
-        print('- Saving ', file_path)
+        print('- Saving', file_path)
         try:
             layer = self.world_map[layer_name]
             layer = numpy.transpose(numpy.fliplr(layer))  # kill me
@@ -54,7 +56,7 @@ class SaveHandler:
         :return:
         """
         file_path = 'worlds' + "/" + self.path + "/" + layer_name + ".png"
-        print('- Saving ', file_path)
+        print('- Saving', file_path)
         layer = self.world_map[layer_name] * 65535
         layer = numpy.transpose(numpy.fliplr(layer))  # kill me
         size = layer.shape

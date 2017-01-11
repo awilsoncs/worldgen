@@ -1,3 +1,5 @@
+from __future__ import print_function
+
 import argparse
 import sys
 import time
@@ -11,10 +13,10 @@ from worldgen.config import get_config
 
 def main():
     parser = add_args()
-    parser.parse_args()
+    args = parser.parse_args()
 
-    t = int(time.time())
-    config_file = get_config()
+    t = args.seed
+    config_file = get_config(config_file=args.config)
 
     x = config_file.getint('Parameters', 'size_x')
     y = config_file.getint('Parameters', 'size_y')
@@ -44,8 +46,8 @@ def main():
 
 def add_args():
     parser = argparse.ArgumentParser("Generate world maps.")
-    parser.add_argument("--seed", type=int, help="The random seed to be used")
-    parser.add_argument('--default', help="Generate a world using default settings")
+    parser.add_argument("--seed", type=int, help="The random seed to used", default=int(time.time()))
+    parser.add_argument('-c', '--config', help="Generate a world using config settings", default="config.ini")
     parser.add_argument('-v', '--verbose', action='store_true', help="Print more output during generation")
     return parser
 

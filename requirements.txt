@@ -1,0 +1,6 @@
+configparser (3.5.0)
+numpy (1.11.3)
+pip (9.0.1)
+pypng (0.0.18)
+setuptools (32.3.1)
+wheel (0.29.0)
